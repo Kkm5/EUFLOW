@@ -1,11 +1,11 @@
 Package: EUFLOW
 Type: Package
-Title: What the Package Does (Title Case)
+Title: EUFLOW: Expected utility workflow guidance system
 Version: 0.1
 Date: 2016-06-17
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: Kevin K McDade
+Maintainer: kkm5@pitt.edu
+Description: A user provides a reference dataset which is a dataframe with measurement points by sample identifiers and alternative evaluation sets on the same measurement points and sample identifiers
 License: What license is it under?
 LazyData: TRUE
 RoxygenNote: 5.0.1
