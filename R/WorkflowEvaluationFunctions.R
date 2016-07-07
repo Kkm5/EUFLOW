@@ -3,10 +3,8 @@ require(IdMappingAnalysis)
 options(stringsAsFactors = FALSE)
 #
 # #############example
- RNASEQDATA<-read.csv(file="RNASEQDATA.csv",header=TRUE)
- RPPADATA<-read.csv(file="RPPADATA.original.csv",header=TRUE)
 
-assign.status<-function(x,status,data.type,version){
+.assign.status<-function(x,status,data.type,version){
   if (status == "workflow_option")
     status_tag<-paste(row.names(x),"_WFO","_",as.character(data.type),"_",as.character(version),sep="")
   if (status == "driver")
@@ -15,20 +13,21 @@ assign.status<-function(x,status,data.type,version){
 }
 
 
-############example
-EvaluationExperimentSet<-RNASEQDATA
-ReferenceSet<-RPPADATA
 
 #' WorkflowEvaluationData
 #'
 #' @param EvaluationExperimentSet - Merged set of Workflow options on the same samples
 #' @param ReferenceSet - The Reference data set which is related to the Evaluation set as determined by the Model quality
-#'
 #' @return An object of the class list which the first item is the reference dataset and all following list items are workflow options on the same samples
 #' @export
-#'
-#' @examples Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
-#'
+#' @examples \dontrun{
+#' RNASEQDATA<-read.csv(file="RNASEQDATA.csv",header=TRUE)
+#' RPPADATA<-read.csv(file="RPPADATA.original.csv",header=TRUE)
+#' EvaluationExperimentSet<-RNASEQDATA
+#' ReferenceSet<-RPPADATA
+#' Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+#' }
+
 WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 
     names(EvaluationExperimentSet)[1]<- "Symbol"
@@ -43,7 +42,7 @@ WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 
 }
 
-Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+# Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
 
 #' Merge tag options
 #'
@@ -59,24 +58,24 @@ Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
 merge.tag.options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
     EvaluationList<-Workflow.Data[[2]]
     Merged.options<-Workflow.Data[[1]]
-    row.names(Merged.options)<-assign.status(Merged.options,status="driver",ReferenceTag,1)
+    row.names(Merged.options)<-.assign.status(Merged.options,status="driver",ReferenceTag,1)
     for(o in c(1:length(EvaluationList))) {
         Evaluation_dataframe<-as.data.frame(EvaluationList[[o]])
         SymbolList<-strsplit(row.names(Evaluation_dataframe),"_")
         row.names(Evaluation_dataframe)<-sapply(SymbolList, "[", 1)
-        row.names(Evaluation_dataframe)<-assign.status(Evaluation_dataframe,status="workflow_option",EvaluationTag,o)
+        row.names(Evaluation_dataframe)<-.assign.status(Evaluation_dataframe,status="workflow_option",EvaluationTag,o)
         Merged.options=rbind(Merged.options,Evaluation_dataframe)
     }
     return(Merged.options)
     }
 
-Merged.options<-merge.tag.options(Workflow.Data)
+# Merged.options<-merge.tag.options(Workflow.Data)
 
+#' make.workflow.map
+#'
 #' Make a workflow map
 #'
 #' @param Merged options
-#'
-#'
 #' @return WorkflowMap.object a dataframe of reference tags mapped to the respective evaluation tags
 #'
 #' @examples WorkflowMap.object<-make.workflow.map(Merged.options)
@@ -93,27 +92,27 @@ make.workflow.map <- function(Merged.options){
   ###when your ready class(Merged.options)<- "WorkflowMap"
   return(WorkflowMap)
 }
-WorkflowMap.object<-make.workflow.map(Merged.options)
+#WorkflowMap.object<-make.workflow.map(Merged.options)
 
 
+#
+#
+# IdMap.example<-IdMap(DF=WorkflowMap.object,name="Workflowmap.object", primaryKey="drivers",secondaryKey="workflow_options_merged")
+#
+#
+# secondaryIDs<-unlist(strsplit(WorkflowMap.object$workflow_options_merged,","))
+#
+# uniquePairs_workflow <- as.UniquePairs.IdMap(IdMap.example,secondaryIDs)
+#
 
-
-IdMap.example<-IdMap(DF=WorkflowMap.object,name="Workflowmap.object", primaryKey="drivers",secondaryKey="workflow_options_merged")
-
-
-secondaryIDs<-unlist(strsplit(WorkflowMap.object$workflow_options_merged,","))
-
-uniquePairs_workflow <- as.UniquePairs.IdMap(IdMap.example,secondaryIDs)
-
-
-P<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) == "DRIVER",]
-names(P)[names(P)=="Symbol"] <- "drivers"
-P$drivers<-row.names(P)
-RSALL<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) != "DRIVER",]
-names(RSALL)[names(RSALL)=="Symbol"] <- "workflow_options_merged"
-RSALL$workflow_options_merged<-row.names(RSALL)
-Model.quality.object<-CorrData(uniquePairs_workflow,P,RSALL)
-
+# P<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) == "DRIVER",]
+# names(P)[names(P)=="Symbol"] <- "drivers"
+# P$drivers<-row.names(P)
+# RSALL<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) != "DRIVER",]
+# names(RSALL)[names(RSALL)=="Symbol"] <- "workflow_options_merged"
+# RSALL$workflow_options_merged<-row.names(RSALL)
+# Model.quality.object<-CorrData(uniquePairs_workflow,P,RSALL)
+#
 
 
 Workflow.Criterion<-function(Model.quality.object){
@@ -121,10 +120,10 @@ Workflow.Criterion<-function(Model.quality.object){
   return(Model.quality)
 }
 
-Model.Quality<-Workflow.Criterion(Model.quality.object)
-
-as.data.frame(Model.Quality)
-
+# Model.Quality<-Workflow.Criterion(Model.quality.object)
+#
+# as.data.frame(Model.Quality)
+#
 fit2clusters.workflow<-function(Y, Ysigsq,
          bootModel,
          piStart = c(0.5, 0.5),
