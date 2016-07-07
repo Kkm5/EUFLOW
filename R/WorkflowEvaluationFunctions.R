@@ -272,7 +272,6 @@ Workflow.posteriorestimate<-function(Model.quality.object,Model.Quality,postProb
   return(bootMergedWithPairs)
 }
 
-Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
 
 expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5)
     {
@@ -294,7 +293,18 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
 }
 
 
-
+#' Workflow.Evaluation.table
+#'
+#' Workflow.Evaluation.table:  Produces an expected utility table for guidance and evaluation
+#'
+#' @param Posterior.dataframe Produced by Workflow.posteriorestimate().
+#' @return Nicely formatted table of posterior probabilities, Pr(+) and Pr(-), standard deviations, model quality scores, and biases.
+#' @examples {
+#' Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
+#' Workflow.Evaluation.table(Posterior.dataframe)
+#' Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
+#' Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
+#' }
 
 Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
     WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",4),Posterior.dataframe)
@@ -311,7 +321,4 @@ Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,
 
 
 
-Workflow.Evaluation.table(Posterior.dataframe)
 
-Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
-Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
