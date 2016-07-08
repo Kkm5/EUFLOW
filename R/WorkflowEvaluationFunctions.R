@@ -234,7 +234,18 @@ Workflow.posteriorestimate<-function(Model.quality.object,Model.Quality,postProb
   return(bootMergedWithPairs)
 }
 
-
+#' expectedUtility
+#'
+#' Given the Posterior estimates evaluate the expected utility for a users determined Utp,Lfp,deltaPlus,guarantee
+#' @param dataset the resulting dataframe from Workflow.posteriorestimate
+#' @param a label for the workflow
+#' @param Loss of a false positive
+#' @param Utility of a true positive
+#' @param deltaPlus
+#' @param guarantee
+#' @return the expected utilty and associated estimates
+#' @export
+#'
 expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5)
     {
     postProbVar = pmax(dataset$postProbVar, guarantee)
@@ -261,6 +272,7 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
 #'
 #' @param Posterior.dataframe Produced by Workflow.posteriorestimate().
 #' @return Nicely formatted table of posterior probabilities, Pr(+) and Pr(-), standard deviations, model quality scores, and biases.
+#' @export
 
 
 Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
