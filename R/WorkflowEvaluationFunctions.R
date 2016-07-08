@@ -16,8 +16,8 @@ options(stringsAsFactors = FALSE)
 
 #' WorkflowEvaluationData
 #'
-#' @param EvaluationExperimentSet - Merged set of Workflow options on the same samples
-#' @param ReferenceSet - The Reference data set which is related to the Evaluation set as determined by the Model quality
+#' @param EvaluationExperimentSet         Merged set of Workflow options on the same samples.
+#' @param ReferenceSet                    The Reference data set which is related to the Evaluation set as determined by the Model quality
 #' @return An object of the class list which the first item is the reference dataset and all following list items are workflow options on the same samples
 #' @export
 #' @examples \dontrun{
