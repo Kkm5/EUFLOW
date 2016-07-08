@@ -13,20 +13,13 @@ options(stringsAsFactors = FALSE)
 }
 
 
-
 #' WorkflowEvaluationData
 #'
 #' @param EvaluationExperimentSet         Merged set of Workflow options on the same samples.
 #' @param ReferenceSet                    The Reference data set which is related to the Evaluation set as determined by the Model quality
 #' @return An object of the class list which the first item is the reference dataset and all following list items are workflow options on the same samples
 #' @export
-#' @examples \dontrun{
-#' RNASEQDATA<-read.csv(file="RNASEQDATA.csv",header=TRUE)
-#' RPPADATA<-read.csv(file="RPPADATA.original.csv",header=TRUE)
-#' EvaluationExperimentSet<-RNASEQDATA
-#' ReferenceSet<-RPPADATA
-#' Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
-#' }
+
 
 WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 
@@ -42,19 +35,15 @@ WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 
 }
 
-# Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
 
 #' Merge tag options
 #'
 #' @param Workflow.Data object where reference is the first item an the evaluation data is all further items in list
 #' @param ReferenceTag which sets a particular symbol for the reference set tag
 #' @param EvaluationTag which sets a particular symbol for the evaluation set tag
-#'
 #' @return Merged.options a dataframe with renamed labels
 #' @export
-#'
-#' @examples Merged.options<-merge.tag.options(Workflow.Data)
-#'
+
 merge.tag.options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
     EvaluationList<-Workflow.Data[[2]]
     Merged.options<-Workflow.Data[[1]]
@@ -77,9 +66,7 @@ merge.tag.options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
 #'
 #' @param Merged options
 #' @return WorkflowMap.object a dataframe of reference tags mapped to the respective evaluation tags
-#'
-#' @examples WorkflowMap.object<-make.workflow.map(Merged.options)
-#'
+#' @export
 
 make.workflow.map <- function(Merged.options){
   drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
@@ -92,27 +79,6 @@ make.workflow.map <- function(Merged.options){
   ###when your ready class(Merged.options)<- "WorkflowMap"
   return(WorkflowMap)
 }
-#WorkflowMap.object<-make.workflow.map(Merged.options)
-
-
-#
-#
-# IdMap.example<-IdMap(DF=WorkflowMap.object,name="Workflowmap.object", primaryKey="drivers",secondaryKey="workflow_options_merged")
-#
-#
-# secondaryIDs<-unlist(strsplit(WorkflowMap.object$workflow_options_merged,","))
-#
-# uniquePairs_workflow <- as.UniquePairs.IdMap(IdMap.example,secondaryIDs)
-#
-
-# P<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) == "DRIVER",]
-# names(P)[names(P)=="Symbol"] <- "drivers"
-# P$drivers<-row.names(P)
-# RSALL<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) != "DRIVER",]
-# names(RSALL)[names(RSALL)=="Symbol"] <- "workflow_options_merged"
-# RSALL$workflow_options_merged<-row.names(RSALL)
-# Model.quality.object<-CorrData(uniquePairs_workflow,P,RSALL)
-#
 
 
 Workflow.Criterion<-function(Model.quality.object){
@@ -120,10 +86,7 @@ Workflow.Criterion<-function(Model.quality.object){
   return(Model.quality)
 }
 
-# Model.Quality<-Workflow.Criterion(Model.quality.object)
-#
-# as.data.frame(Model.Quality)
-#
+
 fit2clusters.workflow<-function(Y, Ysigsq,
          bootModel,
          piStart = c(0.5, 0.5),
@@ -298,12 +261,7 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
 #'
 #' @param Posterior.dataframe Produced by Workflow.posteriorestimate().
 #' @return Nicely formatted table of posterior probabilities, Pr(+) and Pr(-), standard deviations, model quality scores, and biases.
-#' @examples {
-#' Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
-#' Workflow.Evaluation.table(Posterior.dataframe)
-#' Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
-#' Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
-#' }
+
 
 Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
     WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",4),Posterior.dataframe)
