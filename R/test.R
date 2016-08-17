@@ -26,3 +26,4 @@ Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quali
 Workflow.Evaluation.table(Posterior.dataframe)
 Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
 Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
+Workflow.Evaluation.table(Posterior.dataframe,Utp=1)
