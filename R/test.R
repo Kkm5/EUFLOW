@@ -2,7 +2,8 @@
 
 RNASEQDATA<-read.csv(file="RNASEQDATA.csv",header=TRUE)
 RPPADATA<-read.csv(file="RPPADATA.original.csv",header=TRUE)
-EvaluationExperimentSet<-RNASEQDATA
+#EvaluationExperimentSet<-RNASEQDATA
+EvaluationExperimentSet<-rbind(RNASEQDATA,RANDOMSET)
 ReferenceSet<-RPPADATA
 Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
 Merged.options<-merge.tag.options(Workflow.Data)
