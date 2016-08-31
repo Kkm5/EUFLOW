@@ -1,5 +1,5 @@
 
-
+setwd("C:/Users/Mcdade/Desktop/EUFLOW")
 RNASEQDATA<-read.csv(file="RNASEQDATA.csv",header=TRUE)
 RPPADATA<-read.csv(file="RPPADATA.original.csv",header=TRUE)
 EvaluationExperimentSet<-RNASEQDATA
