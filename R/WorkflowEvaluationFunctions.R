@@ -38,13 +38,13 @@ WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 
 #' Merge tag options
 #'
-#' @param Workflow.Data object where reference is the first item an the evaluation data is all further items in list
-#' @param ReferenceTag which sets a particular symbol for the reference set tag
-#' @param EvaluationTag which sets a particular symbol for the evaluation set tag
-#' @return Merged.options a dataframe with renamed labels
+#' @param Workflow.Data A list of length 2. The first item is the reference dataset, and the second item is a dataframe combining all the evaluation datasets.
+#' @param ReferenceTag A string to use as a suffix for ID's from the reference dataset.
+#' @param EvaluationTag A string to use as a suffix for ID's from the evaluation dataset.
+#' @return Merged.options A dataframe with renamed labels
 #' @export
 
-merge.tag.options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
+merge_tag_options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
     EvaluationList<-Workflow.Data[[2]]
     Merged.options<-Workflow.Data[[1]]
     row.names(Merged.options)<-.assign.status(Merged.options,status="driver",ReferenceTag,1)
@@ -58,42 +58,25 @@ merge.tag.options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
     return(Merged.options)
     }
 
-# Merged.options<-merge.tag.options(Workflow.Data)
+
+
+
 
 #' make.workflow.map
 #'
 #' Make a workflow map
 #'
-#' @param Merged options
-#' @return WorkflowMap.object a dataframe of reference tags mapped to the respective evaluation tags
-#' @export
-
-#make.workflow.map <- function(Merged.options){
-#  drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
-#  workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
-#  workflow_options<-row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 2) == "WFO",])
-#  imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
-#  imin<-min(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
-#  workflow_options_merged<-paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == imin,]),row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == imax,]),sep=",")
-#  WorkflowMap<-data.frame(drivers,workflow_options_merged)
-#  ###when your ready class(Merged.options)<- "WorkflowMap"
-#  return(WorkflowMap)
-#}
-
-
-count.options<-function(x) {
-    paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == x,]))
-}
-
+#' @param Merged.options A concatenation of the evaluation and reference data set features.
+#' @return A data frame with two columns: "drivers" (the IDs for the features in the reference data set), and "workflow_options_merged":
+#' @details  The "drivers" are the ID
+#'
 make.workflow.map <- function(Merged.options){
+
+
     drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
     workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
-    #workflow_options<-row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 2) == "WFO",])
     imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
-    #imin<-min(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
-    #workflow_options_merged<-paste(count.options(workflow_options_data,1),count.options(workflow_options_data,2),count.options(workflow_options_data,3),sep=",")
     workflow_options_matrix<-sapply(1:imax,count.options)
-    #workflow_options_merged<-paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == imin,]),row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == imax,]),sep=",")
     workflow_options_merged<-sapply(1:dim(workflow_options_matrix)[1],function(i){paste0(as.character(workflow_options_matrix[i,]),collapse=",")})
     WorkflowMap<-data.frame(drivers,workflow_options_merged)
     ###when your ready class(Merged.options)<- "WorkflowMap"
@@ -279,8 +262,8 @@ Workflow.posteriorestimate<-function(Model.quality.object,Model.Quality,postProb
 #' @param a label for the workflow
 #' @param Loss of a false positive
 #' @param Utility of a true positive
-#' @param deltaPlus
-#' @param guarantee
+#' @param deltaPlus parameter to estimate error
+#' @param guarantee starting point
 #' @return the expected utilty and associated estimates
 #' @export
 #'
