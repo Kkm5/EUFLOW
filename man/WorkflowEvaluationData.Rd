@@ -7,18 +7,14 @@
 WorkflowEvaluationData(EvaluationExperimentSet, ReferenceSet)
 }
 \arguments{
-\item{EvaluationExperimentSet}{- Merged set of Workflow options on the same samples}
+\item{EvaluationExperimentSet}{Merged set of Workflow options on the same samples.}
 
-\item{ReferenceSet}{- The Reference data set which is related to the Evaluation set as determined by the Model quality}
+\item{ReferenceSet}{The Reference data set which is related to the Evaluation set as determined by the Model quality}
 }
 \value{
 An object of the class list which the first item is the reference dataset and all following list items are workflow options on the same samples
 }
 \description{
 WorkflowEvaluationData
-}
-\examples{
-Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
-
 }
 

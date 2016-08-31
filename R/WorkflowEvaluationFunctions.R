@@ -68,16 +68,52 @@ merge.tag.options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
 #' @return WorkflowMap.object a dataframe of reference tags mapped to the respective evaluation tags
 #' @export
 
+#make.workflow.map <- function(Merged.options){
+#  drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
+#  workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
+#  workflow_options<-row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 2) == "WFO",])
+#  imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
+#  imin<-min(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
+#  workflow_options_merged<-paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == imin,]),row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == imax,]),sep=",")
+#  WorkflowMap<-data.frame(drivers,workflow_options_merged)
+#  ###when your ready class(Merged.options)<- "WorkflowMap"
+#  return(WorkflowMap)
+#}
+
+
+count.options<-function(x) {
+    paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == x,]))
+}
+
 make.workflow.map <- function(Merged.options){
-  drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
-  workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
-  workflow_options<-row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 2) == "WFO",])
-  imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
-  imin<-min(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
-  workflow_options_merged<-paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == imin,]),row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == imax,]),sep=",")
-  WorkflowMap<-data.frame(drivers,workflow_options_merged)
-  ###when your ready class(Merged.options)<- "WorkflowMap"
-  return(WorkflowMap)
+    drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
+    workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
+    #workflow_options<-row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 2) == "WFO",])
+    imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
+    #imin<-min(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
+    #workflow_options_merged<-paste(count.options(workflow_options_data,1),count.options(workflow_options_data,2),count.options(workflow_options_data,3),sep=",")
+    workflow_options_matrix<-sapply(1:imax,count.options)
+    #workflow_options_merged<-paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == imin,]),row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == imax,]),sep=",")
+    workflow_options_merged<-sapply(1:dim(workflow_options_matrix)[1],function(i){paste0(as.character(workflow_options_matrix[i,]),collapse=",")})
+    WorkflowMap<-data.frame(drivers,workflow_options_merged)
+    ###when your ready class(Merged.options)<- "WorkflowMap"
+    return(WorkflowMap)
+}
+
+
+Model.quality.list<-function(Merged.options){
+    WorkflowMap.object<-make.workflow.map(Merged.options)
+    IdMap.example<-IdMap(DF=WorkflowMap.object,name="Workflowmap.object", primaryKey="drivers",secondaryKey="workflow_options_merged")
+    secondaryIDs<-unlist(strsplit(WorkflowMap.object$workflow_options_merged,","))
+    uniquePairs_workflow <- as.UniquePairs.IdMap(IdMap.example,secondaryIDs)
+    reference<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) == "DRIVER",]
+    names(reference)[names(reference)=="Symbol"] <- "drivers"
+    reference$drivers<-row.names(reference)
+    evaluation<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) != "DRIVER",]
+    names(evaluation)[names(evaluation)=="Symbol"] <- "workflow_options_merged"
+    evaluation$workflow_options_merged<-row.names(evaluation)
+    Model.quality.object<-CorrData(uniquePairs_workflow,reference,evaluation)
+    return(Model.quality.object)
 }
 
 
@@ -85,6 +121,8 @@ Workflow.Criterion<-function(Model.quality.object){
   Model.quality<- Corr(Model.quality.object,method="spearman",verbose=TRUE)
   return(Model.quality)
 }
+
+
 
 
 fit2clusters.workflow<-function(Y, Ysigsq,
