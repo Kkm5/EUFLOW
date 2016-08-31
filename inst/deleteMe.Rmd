@@ -1,7 +1,26 @@
+---
+title: "Untitled"
+author: "roger"
+date: "August 31, 2016"
+output: html_document
+---
 
-setwd("C:/Users/Mcdade/Desktop/EUFLOW")
-RNASEQDATA<-read.csv(file="RNASEQDATA.csv",header=TRUE)
-RPPADATA<-read.csv(file="RPPADATA.original.csv",header=TRUE)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(EUFLOW)
+```
+
+The contents of this package are:
+```{r}
+search() 
+ls(pos=2)
+```
+
+We now test the package using test.R contents.
+```{r}
+
+RNASEQDATA<-read.csv(file="data/RNASEQDATA.csv",header=TRUE)
+RPPADATA<-read.csv(file="data/RPPADATA.original.csv",header=TRUE)
 EvaluationExperimentSet<-RNASEQDATA
 #EvaluationExperimentSet<-rbind(RNASEQDATA,RANDOMSET)
 ReferenceSet<-RPPADATA
@@ -14,3 +33,4 @@ Workflow.Evaluation.table(Posterior.dataframe)
 Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
 Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
 Workflow.Evaluation.table(Posterior.dataframe,Utp=1)
+```
