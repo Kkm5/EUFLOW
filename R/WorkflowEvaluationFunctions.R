@@ -71,7 +71,9 @@ merge_tag_options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
 #' @details  The "drivers" are the ID
 #'
 make.workflow.map <- function(Merged.options){
-
+    count.options<-function(x) {
+        paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == x,]))
+    }
 
     drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
     workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
