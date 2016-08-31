@@ -85,7 +85,15 @@ make.workflow.map <- function(Merged.options){
     return(WorkflowMap)
 }
 
-
+#' Model.quality.list
+#'
+#' Produces a 'model quality object'
+#'
+#' @param Merged.options See other doc.
+#' @return A "model quality object".
+#' @export
+#'
+#'
 Model.quality.list<-function(Merged.options){
     WorkflowMap.object<-make.workflow.map(Merged.options)
     IdMap.example<-IdMap(DF=WorkflowMap.object,name="Workflowmap.object", primaryKey="drivers",secondaryKey="workflow_options_merged")
