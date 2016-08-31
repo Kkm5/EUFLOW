@@ -7,12 +7,15 @@
 make.workflow.map(Merged.options)
 }
 \arguments{
-\item{Merged}{options}
+\item{Merged.options}{A concatenation of the evaluation and reference data set features.}
 }
 \value{
-WorkflowMap.object a dataframe of reference tags mapped to the respective evaluation tags
+A data frame with two columns: "drivers" (the IDs for the features in the reference data set), and "workflow_options_merged":
 }
 \description{
 Make a workflow map
+}
+\details{
+The "drivers" are the ID
 }
 

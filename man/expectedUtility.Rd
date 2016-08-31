@@ -10,6 +10,10 @@ expectedUtility(dataset, label = "", Lfp = 1, Utp = 1, deltaPlus = 1,
 \arguments{
 \item{dataset}{the resulting dataframe from Workflow.posteriorestimate}
 
+\item{deltaPlus}{parameter to estimate error}
+
+\item{guarantee}{starting point}
+
 \item{a}{label for the workflow}
 
 \item{Loss}{of a false positive}
