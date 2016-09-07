@@ -23,8 +23,9 @@ We now test the package using test.R contents.
 
 RNASEQDATA<-read.csv(file="../data/RNASEQDATA.csv",header=TRUE)
 RPPADATA<-read.csv(file="../data/RPPADATA.original.csv",header=TRUE)
-EvaluationExperimentSet<-RNASEQDATA
-#EvaluationExperimentSet<-rbind(RNASEQDATA,RANDOMSET)
+#RANDOMSET<-read.csv(file="../data/RANDOMSET.csv",header=TRUE)
+#EvaluationExperimentSet<-RNASEQDATA
+EvaluationExperimentSet<-rbind(RNASEQDATA,RANDOMSET)
 ReferenceSet<-RPPADATA
 Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
 Merged.options<-merge_tag_options(Workflow.Data)
