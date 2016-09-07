@@ -1,9 +1,16 @@
 require(IdMappingAnalysis)
-# #require(mvbutils)
+#require(mvbutils)
 options(stringsAsFactors = FALSE)
 #
 # #############example
 
+#' .assign.status
+#'
+#' places tag on to an identifier
+#' @param a set of identifiers
+#' @return the taged identifier
+#' @export
+#'
 .assign.status<-function(x,status,data.type,version){
   if (status == "workflow_option")
     status_tag<-paste(row.names(x),"_WFO","_",as.character(data.type),"_",as.character(version),sep="")
@@ -69,21 +76,34 @@ merge_tag_options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
 #' @param Merged.options A concatenation of the evaluation and reference data set features.
 #' @return A data frame with two columns: "drivers" (the IDs for the features in the reference data set), and "workflow_options_merged":
 #' @details  The "drivers" are the ID
+#' @export
 #'
 make.workflow.map <- function(Merged.options){
+    drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
+    workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
     count.options<-function(x) {
         paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == x,]))
     }
-
-    drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
-    workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
     imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
     workflow_options_matrix<-sapply(1:imax,count.options)
     workflow_options_merged<-sapply(1:dim(workflow_options_matrix)[1],function(i){paste0(as.character(workflow_options_matrix[i,]),collapse=",")})
     WorkflowMap<-data.frame(drivers,workflow_options_merged)
-    ###when your ready class(Merged.options)<- "WorkflowMap"
     return(WorkflowMap)
 }
+#make.workflow.map <- function(Merged.options){
+#    count.options<-function(x) {
+#        paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == x,]))
+#    }
+
+#    drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
+#    workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
+#    imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
+#    workflow_options_matrix<-sapply(1:imax,count.options)
+#    workflow_options_merged<-sapply(1:dim(workflow_options_matrix)[1],function(i){paste0(as.character(workflow_options_matrix[i,]),collapse=",")})
+#    WorkflowMap<-data.frame(drivers,workflow_options_merged)
+#    ###when your ready class(Merged.options)<- "WorkflowMap"
+#    return(WorkflowMap)
+#}
 
 #' Model.quality.list
 #'
