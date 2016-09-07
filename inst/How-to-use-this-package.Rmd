@@ -2,7 +2,7 @@
 title: "Untitled"
 author: "Kevin K. McDade"
 date: "August 31, 2016"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -30,7 +30,7 @@ Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
 Merged.options<-merge_tag_options(Workflow.Data)
 Model.quality.object<-Model.quality.list(Merged.options)
 Model.Quality<-EUFLOW:::Workflow.Criterion(Model.quality.object)
-Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
+Posterior.dataframe<-EUFLOW:::Workflow.posteriorestimate(Model.quality.object,Model.Quality)
 Workflow.Evaluation.table(Posterior.dataframe)
 Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
 Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
