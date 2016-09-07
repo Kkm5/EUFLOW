@@ -109,7 +109,13 @@ Model.quality.list<-function(Merged.options){
     return(Model.quality.object)
 }
 
-
+#' Workflow.Criterion
+#'
+#' User specifies the model quality used to evaluate the workflow
+#' @param Model.quality.object the pairs with data to be used to estimate model quality
+#' @return "Values of model quality per pair"
+#' @export
+#'
 Workflow.Criterion<-function(Model.quality.object){
   Model.quality<- Corr(Model.quality.object,method="spearman",verbose=TRUE)
   return(Model.quality)
@@ -117,7 +123,13 @@ Workflow.Criterion<-function(Model.quality.object){
 
 
 
-
+#' fit2clusters.workflow
+#'
+#' "Performs the EM algorithm over the bootstrap values"
+#' @param Multiple parameters - to be completed later
+#' @return "a dataframe of posterior odds and posterior probability variance"
+#' @export
+#'
 fit2clusters.workflow<-function(Y, Ysigsq,
          bootModel,
          piStart = c(0.5, 0.5),
@@ -251,6 +263,13 @@ fit2clusters.workflow<-function(Y, Ysigsq,
 
 }
 
+#' Workflow.posteriorestimate
+#'
+#' Calls the fit2clusters.workflow function and creates a dataframe with bootstap values, posterior odds, posterior probability variance, for each identifier pair
+#' @param Model quality data and Model Quality
+#' @return a evaulatioin ready dataframe of the posterior estimates
+#' @export
+#'
 Workflow.posteriorestimate<-function(Model.quality.object,Model.Quality,postProb=NULL,postProbVar=NULL){
   bootstrap<-Bootstrap(Model.quality.object,Fisher=TRUE,verbose=TRUE)
   bootModel<-as.data.frame(bootstrap)
@@ -304,8 +323,6 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
 #' @param Posterior.dataframe Produced by Workflow.posteriorestimate().
 #' @return Nicely formatted table of posterior probabilities, Pr(+) and Pr(-), standard deviations, model quality scores, and biases.
 #' @export
-
-
 Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
     WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",4),Posterior.dataframe)
     colnames(WorkflowStats)[1]<-"Marker"

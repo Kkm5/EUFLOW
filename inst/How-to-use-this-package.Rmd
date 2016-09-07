@@ -1,6 +1,6 @@
 ---
 title: "Untitled"
-author: "roger"
+author: "Kevin K. McDade"
 date: "August 31, 2016"
 output: html_document
 ---
