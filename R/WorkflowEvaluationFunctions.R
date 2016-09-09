@@ -50,7 +50,6 @@ WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 #' @param EvaluationTag A string to use as a suffix for ID's from the evaluation dataset.
 #' @return Merged.options A dataframe with renamed labels
 #' @export
-
 merge_tag_options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
     EvaluationList<-Workflow.Data[[2]]
     Merged.options<-Workflow.Data[[1]]
@@ -63,8 +62,7 @@ merge_tag_options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
         Merged.options=rbind(Merged.options,Evaluation_dataframe)
     }
     return(Merged.options)
-    }
-
+}
 
 
 
