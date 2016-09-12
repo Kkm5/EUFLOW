@@ -31,25 +31,41 @@ search()
 ls(pos=2)
 ```
 
-We now test the package using test.R contents.
+We now test the package using How-touse-this-package.Rmd contents.
+
+Users are required to input two separate data files, regardless of the analysis type. The EUFLOW package depends upon a model quality heuristic which we will demonstate here as correlation between gene expression and protein expression. The first data file, for example, we will use ovarian TCGA RNASeq data on two separate workflows provided on the same samples. Only samples for which protein expression data was available are used in the RNASEQDATA file.
+
+A small slice of this data file (RNASEQDATA) demonstrates the data structure of numbered row names followed by a column of identifiers including a tag _v1 and _v2. The same samples were processed with two different workflow options RnaSeqv1 and RnaSeqv2. The output below shows the gene expression values for the first 9 identifiers (in this case gene names) with a tag to distinguish workflow option. For brevity only 4 of the 198 sample identifiers are represented.
+
+
 ```{r}
 RNASEQDATA<-read.csv(file="../data/RNASEQDATA.csv",header=TRUE)
 RNASEQDATA[1:9,1:5]
+RNASEQDATA[68:77,1:5]
+```
+
+In the second data file we will use TCGA protein expression data on the sampe samples. As above we will output only a subset. Alos note that as this is the reference dataset in this example only one identifier is represented rather than multiple workflow options.   
+```{r}
+RPPADATA<-read.csv(file="../data/RPPADATA.original.csv",header=TRUE)
+
+RPPADATA[1:9,1:5]
+```
+We now have all that is required to run the EUFLOW package. For the purpose of clarity we define the RNASEQDATA set as the EvaluationExperimentSet, which includes 2 workflow options (RnaSeqV1 and RnaSeqv2). We also define the RPPADATA as the ReferenceSet. If it is the choice of the user multiple reference sets can be utilized. 
+
+```{r}
+
+EvaluationExperimentSet<-RNASEQDATA
+ReferenceSet<-RPPADATA
 ```
 
 ```{r}
-RPPADATA<-read.csv(file="../data/RPPADATA.original.csv",header=TRUE)
-#EvaluationExperimentSet<-read.csv(file="../data/RNASEQ_PLUS_RANDOM.csv",header=TRUE)
-#EvaluationExperimentSet[,2:200]
-EvaluationExperimentSet<-RNASEQDATA
-#EvaluationExperimentSet<-rbind(RNASEQDATA,RANDOMSET)
-ReferenceSet<-RPPADATA
-Workflow.Data<-EUFLOW:::WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
-Merged.options<-EUFLOW:::merge_tag_options(Workflow.Data)
+
+Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+Merged.options<-merge_tag_options(Workflow.Data)
 Model.quality.object<-Model.quality.list(Merged.options)
-Model.Quality<-EUFLOW:::Workflow.Criterion(Model.quality.object)
-Posterior.dataframe<-EUFLOW:::Workflow.posteriorestimate(Model.quality.object,Model.Quality)
-EUFLOW:::Workflow.Evaluation.table(Posterior.dataframe)
+Model.Quality<-Workflow.Criterion(Model.quality.object)
+Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
+Workflow.Evaluation.table(Posterior.dataframe)
 Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
 Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
 Workflow.Evaluation.table(Posterior.dataframe,Utp=1)
