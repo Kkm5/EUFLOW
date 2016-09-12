@@ -134,8 +134,8 @@ Model.quality.list<-function(Merged.options){
 #' @return "Values of model quality per pair"
 #' @export
 #'
-Workflow.Criterion<-function(Model.quality.object){
-  Model.quality<- Corr(Model.quality.object,method="spearman",verbose=TRUE)
+Workflow.Criterion<-function(Model.quality.object, method=method){
+  Model.quality<- Corr(Model.quality.object,method=method,verbose=FALSE)
   return(Model.quality)
 }
 
