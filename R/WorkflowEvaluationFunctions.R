@@ -133,7 +133,8 @@ Model.quality.list<-function(Merged.options){
 #' Workflow.Criterion
 #'
 #' User specifies the model quality used to evaluate the workflow
-#' @param Model.quality.object the pairs with data to be used to estimate model quality
+#' @param Model.quality.object The pairs (what kind of object?) with data to be used to estimate model quality
+#' @param method Not sure what this parameter is.
 #' @return "Values of model quality per pair"
 #' @export
 #'
