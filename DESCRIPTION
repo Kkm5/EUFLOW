@@ -1,8 +1,8 @@
 Package: EUFLOW
 Type: Package
 Title: EUFLOW: Expected utility workflow guidance system
-Version: 0.1
-Date: 2016-06-17
+Version: 0.15
+Date: 2016-09-22
 Author: Kevin K McDade
 Maintainer: Kevin K McDade <kkm5@pitt.edu>
 Description: A user provides a reference dataset which is a dataframe with measurement points by sample identifiers and alternative evaluation sets on the same measurement points and sample identifiers
