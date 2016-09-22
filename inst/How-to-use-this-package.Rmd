@@ -39,15 +39,15 @@ A small slice of this data file (RNASEQDATA) demonstrates the data structure of 
 
 
 ```{r}
-RNASEQDATA<-read.csv(file="../data/RNASEQDATA.csv",header=TRUE)
+data(RNASEQDATA)
 RNASEQDATA[1:9,1:5]
 RNASEQDATA[68:77,1:5]
 ```
 
 In the second data file we will use TCGA protein expression data on the sampe samples. As above we will output only a subset. Alos note that as this is the reference dataset in this example only one identifier is represented rather than multiple workflow options.   
 ```{r}
-RPPADATA<-read.csv(file="../data/RPPADATA.original.csv",header=TRUE)
-
+data(RPPADATA.original)
+RPPADATA<-RPPADATA.original
 RPPADATA[1:9,1:5]
 ```
 We now have all that is required to run the EUFLOW package. For the purpose of clarity we define the RNASEQDATA set as the EvaluationExperimentSet, which includes 2 workflow options (RnaSeqV1 and RnaSeqv2). We also define the RPPADATA as the ReferenceSet. If it is the choice of the user multiple reference sets can be utilized. 
