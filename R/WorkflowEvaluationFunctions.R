@@ -33,7 +33,7 @@ WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
     names(EvaluationExperimentSet)[1]<- "Symbol"
     names(ReferenceSet)[1]<- "Symbol"
     row.names(EvaluationExperimentSet)<-EvaluationExperimentSet$Symbol
-    row.names(ReferenceSet)<-ReferenceSet$Symbol
+    row.names(ReferenceSet)<-as.character(ReferenceSet$Symbol)
     WorkflowList<-strsplit(row.names(EvaluationExperimentSet),"_")
     WorkflowNameVector<-sapply(WorkflowList, "[", 1)
     WorkflowOptionVector<-sapply(WorkflowList, "[", 2)
@@ -84,7 +84,9 @@ make.workflow.map <- function(Merged.options){
     }
     imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
     workflow_options_matrix<-sapply(1:imax,count.options)
-    workflow_options_merged<-sapply(1:dim(workflow_options_matrix)[1],function(i){paste0(as.character(workflow_options_matrix[i,]),collapse=",")})
+    workflow_options_merged<-sapply(1:dim(workflow_options_matrix)[1],function(i){
+        paste0(as.character(workflow_options_matrix[i,]),collapse=",")
+    })
     WorkflowMap<-data.frame(drivers,workflow_options_merged)
     return(WorkflowMap)
 }
@@ -115,6 +117,7 @@ make.workflow.map <- function(Merged.options){
 Model.quality.list<-function(Merged.options){
     WorkflowMap.object<-make.workflow.map(Merged.options)
     IdMap.example<-IdMap(DF=WorkflowMap.object,name="Workflowmap.object", primaryKey="drivers",secondaryKey="workflow_options_merged")
+    WorkflowMap.object$workflow_options_merged = as.character(WorkflowMap.object$workflow_options_merged)
     secondaryIDs<-unlist(strsplit(WorkflowMap.object$workflow_options_merged,","))
     uniquePairs_workflow <- as.UniquePairs.IdMap(IdMap.example,secondaryIDs)
     reference<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) == "DRIVER",]
@@ -342,6 +345,7 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
 #' @return Nicely formatted table of posterior probabilities, Pr(+) and Pr(-), standard deviations, model quality scores, and biases.
 #' @export
 Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
+
     WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",4),Posterior.dataframe)
     colnames(WorkflowStats)[1]<-"Marker"
     colnames(WorkflowStats)[2]<-"WorkflowID"
