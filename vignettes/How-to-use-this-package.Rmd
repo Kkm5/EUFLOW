@@ -1,16 +1,27 @@
+<!--
+%\VignetteEngine{knitr:::rmarkdown}
+%\VignetteIndexEntry{How-to-use-the-EUFLOW-package}
+-->
+
+
 ---
-title: "EUFLOW:"
-subtitle: "Expected Utility Workflow Evaluation Package"
+title: "EUFLOW: Workflow Evaluation Using Expected Utility"
 author: "Kevin K. McDade"
-date: "September 9, 2016"
-output: html_document
+date: "`r Sys.Date()`"
+vignette: >
+  %\VignetteEngine{knitr:::rmarkdown}
+  %\SweaveUTF8
+  %\usepackage[utf8](inputenc)
+output: 
+    knitr:::html_vignette:
+        toc: yes
 ---
 
 ```{r setup, include=FALSE}
+library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
-library(EUFLOW)
 options(stringsAsFactors = FALSE)
-
+system("touch I_ran_Rmd")
 ```
 ### I.Introduction
 
@@ -58,7 +69,7 @@ EvaluationExperimentSet<-RNASEQDATA
 ReferenceSet<-RPPADATA
 ```
 
-```{r}
+```{r,eval=FALSE}
 
 Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
 Merged.options<-merge_tag_options(Workflow.Data)
