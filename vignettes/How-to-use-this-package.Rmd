@@ -1,5 +1,5 @@
 <!--
-%\VignetteEngine{knitr:::rmarkdown}
+%\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{How-to-use-the-EUFLOW-package}
 -->
 
@@ -8,13 +8,13 @@
 title: "EUFLOW: Workflow Evaluation Using Expected Utility"
 author: "Kevin K. McDade"
 date: "`r Sys.Date()`"
+output: 
+    rmarkdown:::html_vignette:
+        toc: yes
 vignette: >
-  %\VignetteEngine{knitr:::rmarkdown}
+  %\VignetteEngine{knitr::rmarkdown}
   %\SweaveUTF8
   %\usepackage[utf8](inputenc)
-output: 
-    knitr:::html_vignette:
-        toc: yes
 ---
 
 ```{r setup, include=FALSE}
