@@ -1,17 +1,17 @@
-require(IdMappingAnalysis)
+#require(IdMappingAnalysis)
 #require(mvbutils)
 options(stringsAsFactors = FALSE)
 #
 # #############example
 
-#' .assign.status
+#' assign.status
 #'
 #' places tag on to an identifier
 #' @param a set of identifiers
 #' @return the taged identifier
 #' @export
 #'
-.assign.status<-function(x,status,data.type,version){
+assign.status<-function(x,status,data.type,version){
   if (status == "workflow_option")
     status_tag<-paste(row.names(x),"_WFO","_",as.character(data.type),"_",as.character(version),sep="")
   if (status == "driver")
@@ -53,12 +53,12 @@ WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 merge_tag_options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
     EvaluationList<-Workflow.Data[[2]]
     Merged.options<-Workflow.Data[[1]]
-    row.names(Merged.options)<-.assign.status(Merged.options,status="driver",ReferenceTag,1)
+    row.names(Merged.options)<-assign.status(Merged.options,status="driver",ReferenceTag,1)
     for(o in c(1:length(EvaluationList))) {
         Evaluation_dataframe<-as.data.frame(EvaluationList[[o]])
         SymbolList<-strsplit(row.names(Evaluation_dataframe),"_")
         row.names(Evaluation_dataframe)<-sapply(SymbolList, "[", 1)
-        row.names(Evaluation_dataframe)<-.assign.status(Evaluation_dataframe,status="workflow_option",EvaluationTag,o)
+        row.names(Evaluation_dataframe)<-assign.status(Evaluation_dataframe,status="workflow_option",EvaluationTag,o)
         Merged.options=rbind(Merged.options,Evaluation_dataframe)
     }
     return(Merged.options)
