@@ -94,14 +94,14 @@ Now that we have the data for our example, the WorkflowEvaluationData function w
 ```{r,eval=FALSE}
 >>>>>>> b14465839482afb2e774ee6fb04daaf40a92dda8:vignettes/How-to-use-the-EUFLOW-package.Rmd
 
-Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+Workflow.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
 Workflow.Data[[1]][1:9,1:5]
 
 ```
 Further data processing to determine the number of workflow options and structure tags will be used to name the output by creating a Merged.options object.
 
 ```{r}
-Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+Workflow.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
 Workflow.Data[[1]][1:9,1:5]
 Merged.options<-merge_tag_options(Workflow.Data)
 Merged.options[1:9,1:5]
