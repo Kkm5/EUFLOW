@@ -1,3 +1,6 @@
+---
+output: pdf_document
+---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{How-to-use-the-EUFLOW-package}
@@ -87,8 +90,7 @@ ReferenceSet<-RPPADATA
 <<<<<<< HEAD:inst/How-to-use-this-package.Rmd
 Now that we have the data for our example, the WorkflowEvaluationData function will modify the separate dataframes into one data structure to prepare to calcuate the model quality and perform the evaluation. The first item in the list is the Reference data and the second item in the list is the evaluation data.
 
-```{r}
-=======
+
 ```{r,eval=FALSE}
 >>>>>>> b14465839482afb2e774ee6fb04daaf40a92dda8:vignettes/How-to-use-the-EUFLOW-package.Rmd
 
@@ -99,6 +101,8 @@ Workflow.Data[[1]][1:9,1:5]
 Further data processing to determine the number of workflow options and structure tags will be used to name the output by creating a Merged.options object.
 
 ```{r}
+Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+Workflow.Data[[1]][1:9,1:5]
 Merged.options<-merge_tag_options(Workflow.Data)
 Merged.options[1:9,1:5]
 ```
