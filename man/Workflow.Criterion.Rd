@@ -4,10 +4,12 @@
 \alias{Workflow.Criterion}
 \title{Workflow.Criterion}
 \usage{
-Workflow.Criterion(Model.quality.object)
+Workflow.Criterion(Model.quality.object, method = method)
 }
 \arguments{
-\item{Model.quality.object}{the pairs with data to be used to estimate model quality}
+\item{Model.quality.object}{The pairs (what kind of object?) with data to be used to estimate model quality}
+
+\item{method}{Not sure what this parameter is.}
 }
 \value{
 "Values of model quality per pair"

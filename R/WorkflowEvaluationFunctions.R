@@ -1,17 +1,17 @@
-require(IdMappingAnalysis)
+#require(IdMappingAnalysis)
 #require(mvbutils)
 options(stringsAsFactors = FALSE)
 #
 # #############example
 
-#' .assign.status
+#' assign.status
 #'
 #' places tag on to an identifier
 #' @param a set of identifiers
 #' @return the taged identifier
 #' @export
 #'
-.assign.status<-function(x,status,data.type,version){
+assign.status<-function(x,status,data.type,version){
   if (status == "workflow_option")
     status_tag<-paste(row.names(x),"_WFO","_",as.character(data.type),"_",as.character(version),sep="")
   if (status == "driver")
@@ -33,7 +33,7 @@ WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
     names(EvaluationExperimentSet)[1]<- "Symbol"
     names(ReferenceSet)[1]<- "Symbol"
     row.names(EvaluationExperimentSet)<-EvaluationExperimentSet$Symbol
-    row.names(ReferenceSet)<-ReferenceSet$Symbol
+    row.names(ReferenceSet)<-as.character(ReferenceSet$Symbol)
     WorkflowList<-strsplit(row.names(EvaluationExperimentSet),"_")
     WorkflowNameVector<-sapply(WorkflowList, "[", 1)
     WorkflowOptionVector<-sapply(WorkflowList, "[", 2)
@@ -53,12 +53,12 @@ WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 merge_tag_options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
     EvaluationList<-Workflow.Data[[2]]
     Merged.options<-Workflow.Data[[1]]
-    row.names(Merged.options)<-.assign.status(Merged.options,status="driver",ReferenceTag,1)
+    row.names(Merged.options)<-assign.status(Merged.options,status="driver",ReferenceTag,1)
     for(o in c(1:length(EvaluationList))) {
         Evaluation_dataframe<-as.data.frame(EvaluationList[[o]])
         SymbolList<-strsplit(row.names(Evaluation_dataframe),"_")
         row.names(Evaluation_dataframe)<-sapply(SymbolList, "[", 1)
-        row.names(Evaluation_dataframe)<-.assign.status(Evaluation_dataframe,status="workflow_option",EvaluationTag,o)
+        row.names(Evaluation_dataframe)<-assign.status(Evaluation_dataframe,status="workflow_option",EvaluationTag,o)
         Merged.options=rbind(Merged.options,Evaluation_dataframe)
     }
     return(Merged.options)
@@ -84,7 +84,9 @@ make.workflow.map <- function(Merged.options){
     }
     imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
     workflow_options_matrix<-sapply(1:imax,count.options)
-    workflow_options_merged<-sapply(1:dim(workflow_options_matrix)[1],function(i){paste0(as.character(workflow_options_matrix[i,]),collapse=",")})
+    workflow_options_merged<-sapply(1:dim(workflow_options_matrix)[1],function(i){
+        paste0(as.character(workflow_options_matrix[i,]),collapse=",")
+    })
     WorkflowMap<-data.frame(drivers,workflow_options_merged)
     return(WorkflowMap)
 }
@@ -115,6 +117,7 @@ make.workflow.map <- function(Merged.options){
 Model.quality.list<-function(Merged.options){
     WorkflowMap.object<-make.workflow.map(Merged.options)
     IdMap.example<-IdMap(DF=WorkflowMap.object,name="Workflowmap.object", primaryKey="drivers",secondaryKey="workflow_options_merged")
+    WorkflowMap.object$workflow_options_merged = as.character(WorkflowMap.object$workflow_options_merged)
     secondaryIDs<-unlist(strsplit(WorkflowMap.object$workflow_options_merged,","))
     uniquePairs_workflow <- as.UniquePairs.IdMap(IdMap.example,secondaryIDs)
     reference<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) == "DRIVER",]
@@ -130,7 +133,8 @@ Model.quality.list<-function(Merged.options){
 #' Workflow.Criterion
 #'
 #' User specifies the model quality used to evaluate the workflow
-#' @param Model.quality.object the pairs with data to be used to estimate model quality
+#' @param Model.quality.object The pairs (what kind of object?) with data to be used to estimate model quality
+#' @param method Not sure what this parameter is.
 #' @return "Values of model quality per pair"
 #' @export
 #'
@@ -342,6 +346,7 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
 #' @return Nicely formatted table of posterior probabilities, Pr(+) and Pr(-), standard deviations, model quality scores, and biases.
 #' @export
 Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
+
     WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",4),Posterior.dataframe)
     colnames(WorkflowStats)[1]<-"Marker"
     colnames(WorkflowStats)[2]<-"WorkflowID"
