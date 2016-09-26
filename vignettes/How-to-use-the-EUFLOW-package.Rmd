@@ -27,7 +27,12 @@ system("touch I_ran_Rmd")
 ```
 ### I.Introduction
 
-The data in bioinformatics is often in some “raw” form which is not the intended analysis goal. Processing of this data often involves a multistep process which to as a workflow, pipeline, or protocol.  One major obstacle to data reproducibility is workflows are rarely identical and the differences between workflow steps may not be the optimal way to process the data. We define a workflow here as a series of steps that a user takes to arrive at the analysis goal. The magnitude of the path choices can be considered to be a great benefit to the analyst, however, it is often the case that the user does not know which path to take.   
+The data in bioinformatics is often in some “raw” form which is not yet ready for analysis. 
+Processing this data often involves several steps, called variously a workflow, pipeline, or protocol. 
+REWRITE THE REST OF THIS.
+One major obstacle to data reproducibility is workflows are rarely identical and the differences between workflow steps may not be the optimal way to process the data. 
+We define a workflow here as a series of steps that a user takes to arrive at the analysis goal. 
+The magnitude of the path choices can be considered to be a great benefit to the analyst, however, it is often the case that the user does not know which path to take.   
 
 In regards to bioinformatics workflow options can include ready-to-go data (a finished data set), custom workflows (user decides what steps to take), or use of a tuning parameter (i.e. requiring a certain level of data quality).  Any change in a workflow step or change of a parameter setting constitutes a new workflow option.  To what extent do these choices affect the final dataset to be analyzed? If the datasets differ substantially, will they differ in quality? If so, how can we tell which is best?  Finally, will soundness of the scientific conclusions be harmed by worse workflow options? Surprisingly little is known.  
 
