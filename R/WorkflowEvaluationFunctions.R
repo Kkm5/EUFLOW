@@ -20,7 +20,7 @@ assign.status<-function(x,status,data.type,version){
 }
 
 
-#' WorkflowPathData
+#' WorkflowEvaluationData
 #'
 #' @param EvaluationExperimentSet         Merged set of Workflow options on the same samples.
 #' @param ReferenceSet                    The Reference data set which is related to the Evaluation set as determined by the Model quality
@@ -28,7 +28,7 @@ assign.status<-function(x,status,data.type,version){
 #' @export
 
 
-WorkflowPathData<-function(EvaluationExperimentSet,ReferenceSet){
+WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 
     names(EvaluationExperimentSet)[1]<- "Symbol"
     names(ReferenceSet)[1]<- "Symbol"
