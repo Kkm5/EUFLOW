@@ -1,9 +1,9 @@
 ---
-title: "EUFLOW:"
-subtitle: "Expected Utility Workflow Evaluation Package"
+title: 'EUFLOW:'
 author: "Kevin K. McDade"
 date: "September 9, 2016"
-output: html_document
+output: pdf_document
+subtitle: Expected Utility Workflow Evaluation Package
 ---
 
 ```{r setup, include=FALSE}
@@ -58,13 +58,42 @@ EvaluationExperimentSet<-RNASEQDATA
 ReferenceSet<-RPPADATA
 ```
 
+Now that we have the data for our example, the WorkflowEvaluationData function will modify the separate dataframes into one data structure to prepare to calcuate the model quality and perform the evaluation. The first item in the list is the Reference data and the second item in the list is the evaluation data.
+
 ```{r}
 
 Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+Workflow.Data[[1]][1:9,1:5]
+
+```
+Further data processing to determine the number of workflow options and structure tags will be used to name the output by creating a Merged.options object.
+
+```{r}
 Merged.options<-merge_tag_options(Workflow.Data)
+Merged.options[1:9,1:5]
+```
+The Model.quality.object is created to create a map between the Reference ids and the evaluation ids using the Model.quality.list function.
+
+```{r}
 Model.quality.object<-Model.quality.list(Merged.options)
-Model.Quality<-Workflow.Criterion(Model.quality.object)
+
+```
+Next, Model Quality is an object which contains the model quality values for each of the pairs. How the Model quality is determined is specified by the user.
+```{r}
+Model.Quality<-Workflow.Criterion(Model.quality.object,method="pearson")
+head(as.data.frame(Model.Quality))
+```
+```{r}
+Model.Quality<-Workflow.Criterion(Model.quality.object,method="spearman")
+head(as.data.frame(Model.Quality))
+```
+
+```{r}
 Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
+
+```
+
+```{r}
 Workflow.Evaluation.table(Posterior.dataframe)
 Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
 Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
