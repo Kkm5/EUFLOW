@@ -9,6 +9,7 @@ Description: A user provides a reference dataset which is a dataframe with measu
 License: What license is it under?
 LazyData: TRUE
 Depends: IdMappingAnalysis
-Suggests: knitr
+Suggests: knitr,
+    rmarkdown
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr

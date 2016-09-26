@@ -5,21 +5,23 @@
 
 
 ---
-title: "EUFLOW: Workflow Evaluation Using Expected Utility"
+title: "EUFLOW: Expected-Utility-based Workflow Evaluation"
 author: "Kevin K. McDade"
 date: "`r Sys.Date()`"
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteKeyword{EUFLOW}
   %\SweaveUTF8
   %\usepackage[utf8](inputenc)
 output: 
-    rmarkdown:::html_vignette:
+    rmarkdown::html_vignette:
         toc: yes
 ---
 
 ```{r setup, include=FALSE}
 library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
+library("EUFLOW")
 options(stringsAsFactors = FALSE)
 system("touch I_ran_Rmd")
 ```
