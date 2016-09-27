@@ -1,20 +1,9 @@
----
-output: pdf_document
----
 <!--
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{How-to-use-the-EUFLOW-package}
 -->
 
-
 ---
-<<<<<<< HEAD:inst/How-to-use-this-package.Rmd
-title: 'EUFLOW:'
-author: "Kevin K. McDade"
-date: "September 9, 2016"
-output: pdf_document
-subtitle: Expected Utility Workflow Evaluation Package
-=======
 title: "EUFLOW: Expected-Utility-based Workflow Evaluation"
 author: "Kevin K. McDade"
 date: "`r Sys.Date()`"
@@ -26,7 +15,6 @@ vignette: >
 output: 
     rmarkdown::html_vignette:
         toc: yes
->>>>>>> b14465839482afb2e774ee6fb04daaf40a92dda8:vignettes/How-to-use-the-EUFLOW-package.Rmd
 ---
 
 ```{r setup, include=FALSE}
