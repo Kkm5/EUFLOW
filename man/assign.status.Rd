@@ -7,7 +7,13 @@
 assign.status(x, status, data.type, version)
 }
 \arguments{
-\item{a}{set of identifiers}
+\item{x}{A set of identifiers  TODO: is it really a "set"?}
+
+\item{status}{TODO}
+
+\item{data.type}{TODO}
+
+\item{version}{TODO}
 }
 \value{
 the taged identifier

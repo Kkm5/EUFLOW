@@ -7,7 +7,10 @@ options(stringsAsFactors = FALSE)
 #' assign.status
 #'
 #' places tag on to an identifier
-#' @param a set of identifiers
+#' @param x A set of identifiers  TODO: is it really a "set"?
+#' @param status TODO
+#' @param data.type TODO
+#' @param version TODO
 #' @return the taged identifier
 #' @export
 #'
