@@ -7,18 +7,18 @@ options(stringsAsFactors = FALSE)
 #' assign.status
 #'
 #' places tag on to an identifier
-#' @param x A set of identifiers  TODO: is it really a "set"?
-#' @param status TODO
-#' @param data.type TODO
-#' @param version TODO
+#' @param Dataframe which represent sthe Evaluation dataset or the Reference Dataset
+#' @param tag to determine the evaluation or reference status
+#' @param Workflow category
+#' @param Workflow path number
 #' @return the taged identifier
 #' @export
 #'
 assign.status<-function(x,status,data.type,version){
-  if (status == "workflow_option")
-    status_tag<-paste(row.names(x),"_WFO","_",as.character(data.type),"_",as.character(version),sep="")
-  if (status == "driver")
-    status_tag<-paste(row.names(x),"_DRIVER",sep="")
+  if (status == "workflow_path")
+    status_tag<-paste(row.names(x),"_path","_",as.character(data.type),"_",as.character(version),sep="")
+  if (status == "reference")
+    status_tag<-paste(row.names(x),"_reference",sep="")
   return(status_tag)
 }
 
@@ -53,15 +53,15 @@ WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 #' @param EvaluationTag A string to use as a suffix for ID's from the evaluation dataset.
 #' @return Merged.options A dataframe with renamed labels
 #' @export
-merge_tag_options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
+merge_tag_options<-function(Workflow.Data,ReferenceTag="Protein",EvaluationTag="RNASeq"){
     EvaluationList<-Workflow.Data[[2]]
     Merged.options<-Workflow.Data[[1]]
-    row.names(Merged.options)<-assign.status(Merged.options,status="driver",ReferenceTag,1)
+    row.names(Merged.options)<-assign.status(Merged.options,status="reference",ReferenceTag,1)
     for(o in c(1:length(EvaluationList))) {
         Evaluation_dataframe<-as.data.frame(EvaluationList[[o]])
         SymbolList<-strsplit(row.names(Evaluation_dataframe),"_")
         row.names(Evaluation_dataframe)<-sapply(SymbolList, "[", 1)
-        row.names(Evaluation_dataframe)<-assign.status(Evaluation_dataframe,status="workflow_option",EvaluationTag,o)
+        row.names(Evaluation_dataframe)<-assign.status(Evaluation_dataframe,status="workflow_path",EvaluationTag,o)
         Merged.options=rbind(Merged.options,Evaluation_dataframe)
     }
     return(Merged.options)
@@ -80,17 +80,17 @@ merge_tag_options<-function(Workflow.Data,ReferenceTag="P",EvaluationTag="RS"){
 #' @export
 #'
 make.workflow.map <- function(Merged.options){
-    drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
-    workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
+    reference<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "reference",])
+    workflow_path_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "path",]
     count.options<-function(x) {
-        paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == x,]))
+        paste(row.names(workflow_path_data[sapply(strsplit(row.names(workflow_path_data),"_"), "[", 4) == x,]))
     }
-    imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
-    workflow_options_matrix<-sapply(1:imax,count.options)
-    workflow_options_merged<-sapply(1:dim(workflow_options_matrix)[1],function(i){
-        paste0(as.character(workflow_options_matrix[i,]),collapse=",")
+    imax<-max(unique(sapply(strsplit(row.names(workflow_path_data),"_"), "[", 4)),na.rm = TRUE)
+    workflow_path_matrix<-sapply(1:imax,count.options)
+    workflow_paths_combined<-sapply(1:dim(workflow_path_matrix)[1],function(i){
+        paste0(as.character(workflow_path_matrix[i,]),collapse=",")
     })
-    WorkflowMap<-data.frame(drivers,workflow_options_merged)
+    WorkflowMap<-data.frame(reference,workflow_paths_combined)
     return(WorkflowMap)
 }
 #make.workflow.map <- function(Merged.options){
@@ -119,16 +119,16 @@ make.workflow.map <- function(Merged.options){
 #'
 Model.quality.list<-function(Merged.options){
     WorkflowMap.object<-make.workflow.map(Merged.options)
-    IdMap.example<-IdMap(DF=WorkflowMap.object,name="Workflowmap.object", primaryKey="drivers",secondaryKey="workflow_options_merged")
-    WorkflowMap.object$workflow_options_merged = as.character(WorkflowMap.object$workflow_options_merged)
-    secondaryIDs<-unlist(strsplit(WorkflowMap.object$workflow_options_merged,","))
+    IdMap.example<-IdMap(DF=WorkflowMap.object,name="Workflowmap.object", primaryKey="reference",secondaryKey="workflow_paths_combined")
+    WorkflowMap.object$workflow_paths_combined = as.character(WorkflowMap.object$workflow_paths_combined)
+    secondaryIDs<-unlist(strsplit(WorkflowMap.object$workflow_paths_combined,","))
     uniquePairs_workflow <- as.UniquePairs.IdMap(IdMap.example,secondaryIDs)
-    reference<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) == "DRIVER",]
-    names(reference)[names(reference)=="Symbol"] <- "drivers"
-    reference$drivers<-row.names(reference)
-    evaluation<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) != "DRIVER",]
-    names(evaluation)[names(evaluation)=="Symbol"] <- "workflow_options_merged"
-    evaluation$workflow_options_merged<-row.names(evaluation)
+    reference<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) == "reference",]
+    names(reference)[names(reference)=="Symbol"] <- "reference"
+    reference$reference<-row.names(reference)
+    evaluation<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"),"[",2) != "reference",]
+    names(evaluation)[names(evaluation)=="Symbol"] <- "workflow_paths_combined"
+    evaluation$workflow_paths_combined<-row.names(evaluation)
     Model.quality.object<-CorrData(uniquePairs_workflow,reference,evaluation)
     return(Model.quality.object)
 }
@@ -350,7 +350,7 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
 #' @export
 Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
 
-    WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_options_merged,"_"),"[",4),Posterior.dataframe)
+    WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",4),Posterior.dataframe)
     colnames(WorkflowStats)[1]<-"Marker"
     colnames(WorkflowStats)[2]<-"WorkflowID"
     og<-expectedUtility(label="Use All", dataset=WorkflowStats,Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
