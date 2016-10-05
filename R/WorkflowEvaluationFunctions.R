@@ -296,7 +296,7 @@ fit2clusters.workflow<-function(Y, Ysigsq,
 #' @export
 #'
 Workflow.posteriorestimate<-function(Model.quality.object,Model.Quality,postProb=NULL,postProbVar=NULL){
-  bootstrap<-Bootstrap(Model.quality.object,Fisher=TRUE,verbose=TRUE)
+  bootstrap<-Bootstrap(Model.quality.object,Fisher=TRUE,verbose=FALSE)
   bootModel<-as.data.frame(bootstrap)
   bootModel<-bootModel[complete.cases(bootModel),]
   pairs<-bootModel[,1:2]

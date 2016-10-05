@@ -8,7 +8,7 @@ output: pdf_document
 
 
 ---
-<<<<<<< HEAD:inst/How-to-use-this-package.Rmd
+<<<<<<< HEAD:inst/How-to-use-the-EUFLOW-package.Rmd
 title: 'EUFLOW:'
 author: "Kevin K. McDade"
 date: "September 9, 2016"
@@ -55,7 +55,7 @@ RNASEQDATA[1:9,1:5]
 RNASEQDATA[68:77,1:5]
 ```
 
-In the second data file we will use TCGA protein expression data on the sampe samples. As above we will output only a subset. Alos note that as this is the reference dataset in this example only one identifier is represented rather than multiple workflow options.   
+In the second data file we will use TCGA protein expression data on the samples. As above we will output only a subset. Alos note that as this is the reference dataset in this example only one identifier is represented rather than multiple workflow options.   
 ```{r}
 data(RPPADATA.original)
 RPPADATA<-RPPADATA.original
