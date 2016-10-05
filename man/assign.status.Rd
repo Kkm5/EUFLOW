@@ -7,13 +7,13 @@
 assign.status(x, status, data.type, version)
 }
 \arguments{
-\item{x}{A set of identifiers  TODO: is it really a "set"?}
+\item{Dataframe}{which represent sthe Evaluation dataset or the Reference Dataset}
 
-\item{status}{TODO}
+\item{tag}{to determine the evaluation or reference status}
 
-\item{data.type}{TODO}
+\item{Workflow}{category}
 
-\item{version}{TODO}
+\item{Workflow}{path number}
 }
 \value{
 the taged identifier
