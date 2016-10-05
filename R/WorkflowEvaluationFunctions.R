@@ -353,9 +353,10 @@ Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,
     WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",4),Posterior.dataframe)
     colnames(WorkflowStats)[1]<-"Marker"
     colnames(WorkflowStats)[2]<-"WorkflowID"
+    WorkflowLabel<-as.data.frame(strsplit(WorkflowStats$workflow_paths_combined[1],"_"))[3,]
     Evaluation.table<-expectedUtility(label="Use All", dataset=WorkflowStats,Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
     for(p in unique(WorkflowStats$WorkflowID)){
-        set<-expectedUtility(label=as.character(WorkflowStats$WorkflowID[as.numeric(p)]), dataset=WorkflowStats[WorkflowStats$WorkflowID==as.numeric(p),],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
+        set<-expectedUtility(label=paste(WorkflowLabel,as.character(WorkflowStats$WorkflowID[as.numeric(p)])), dataset=WorkflowStats[WorkflowStats$WorkflowID==as.numeric(p),],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
         Evaluation.table=rbind(Evaluation.table,set)
     }
     return(Evaluation.table)
