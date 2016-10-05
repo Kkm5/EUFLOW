@@ -1,5 +1,5 @@
 ---
-output: pdf_document
+output: html_document
 ---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
@@ -38,29 +38,11 @@ system("touch I_ran_Rmd")
 ```
 ### I.Introduction
 
-The data in bioinformatics is often in some “raw” form which is not yet ready for analysis. 
-Processing this data often involves several steps, called variously a workflow, pipeline, or protocol. 
-REWRITE THE REST OF THIS.
-One major obstacle to data reproducibility is workflows are rarely identical and the differences between workflow steps may not be the optimal way to process the data. 
-We define a workflow here as a series of steps that a user takes to arrive at the analysis goal. 
-The magnitude of the path choices can be considered to be a great benefit to the analyst, however, it is often the case that the user does not know which path to take.   
-
-In regards to bioinformatics workflow options can include ready-to-go data (a finished data set), custom workflows (user decides what steps to take), or use of a tuning parameter (i.e. requiring a certain level of data quality).  Any change in a workflow step or change of a parameter setting constitutes a new workflow option.  To what extent do these choices affect the final dataset to be analyzed? If the datasets differ substantially, will they differ in quality? If so, how can we tell which is best?  Finally, will soundness of the scientific conclusions be harmed by worse workflow options? Surprisingly little is known.  
+The data in bioinformatics is often in some “raw” form which is not yet ready for analysis. Processing this data often involves several steps, called variously a workflow, pipeline, or protocol. We have developed the EUFLOW package to specifically assist users who have multiple versions of data that arise from different *workflow paths*. Each of the *final processed data* files should contain similar features as the rows of the dataframe with columns of identical samples. The collective *workflow path data* is refered to as the *Evaluation Dataset*.  In order to evaluate the alternitive versions of the data the user must also provide a *Reference Dataset*, which is expected to have an expected *Model Quality* to the *Evaluation Dataset*.  
 
 
 
-
-The contents of this package are:
-```{r}
-search() 
-
-```
-
-```{r}
-ls(pos=2)
-```
-
-We now test the package using How-touse-this-package.Rmd contents.
+We now test the package using How-to-use-the-EUFLOW-package.Rmd contents.
 
 Users are required to input two separate data files, regardless of the analysis type. The EUFLOW package depends upon a model quality heuristic which we will demonstate here as correlation between gene expression and protein expression. The first data file, for example, we will use ovarian TCGA RNASeq data on two separate workflows provided on the same samples. Only samples for which protein expression data was available are used in the RNASEQDATA file.
 
