@@ -40,7 +40,7 @@ system("touch I_ran_Rmd")
 
 The data in bioinformatics is often in some “raw” form which is not yet ready for analysis. Processing this data often involves several steps, called variously a workflow, pipeline, or protocol. We have developed the EUFLOW package to specifically assist users who have multiple versions of data that arise from different *workflow paths*. Each of the *final processed data* files should contain similar features as the rows of the dataframe with columns of identical samples. The collective *workflow path data* is refered to as the *Evaluation Dataset*.  In order to evaluate the alternitive versions of the data the user must also provide a *Reference Dataset*, which is expected to have an expected *Model Quality* to the *Evaluation Dataset*.  
 
-
+Hello
 
 We now test the package using How-to-use-the-EUFLOW-package.Rmd contents.
 
