@@ -362,6 +362,28 @@ Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,
     return(Evaluation.table)
 }
 
+#' PlotEvaluationTable
+#'
+#' PlotEvaluationTable:  Produces a plot for the expected utility of workflow path
+#'
+#' @param Evaluation Table
+#' @return Plot of Expected utility and number of filters applied
+#' @export
+PlotEvaluationTable<-function(Evaluation.table){
+    plot(NA,xlim=c(-0.2,5.2),ylim=c(-100,300), main="Total Expected Utility vs Number of Filters Applied",xlab="Number of Filters Applied",ylab="Total EU") # make an empty plot
+    #points(c(0:5),Evaluation.table$Eutility,type="b",pch=1,lwd=2) #Endometrial TEU
+
+}
+
+
+#points(c(0:5),resultTEUOptimize$Eutility,type="b",pch=1,lwd=2) #Endometrial TEU
+#points(c(0:2),resultTEUOptimizeOvarian$Eutility,type="b",pch=1,lty=2,lwd=2) #Ovarian TEU
+
+#resultTEUOptimize$label2<-c("All","J","GSPE","GSEN","AG","GQ")
+#text(c(0:5),resultTEUOptimize$Eutility,labels=paste(resultTEUOptimize$label2,"(",resultTEUOptimize$nPairs,")"),pos=c(4,2,3,3,3,3))
+#text(c(0:2),resultTEUOptimizeOvarian$Eutility,labels=paste(resultTEUOptimizeOvarian$label2,"(",resultTEUOptimizeOvarian$nPairs,")"),pos=c(3,3,3))
+
+#legend(locator(1),c("Ovarian TCGA", "Endometrial GynCOE"), lty = c(2,1))
 
 
 
