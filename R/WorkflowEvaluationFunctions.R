@@ -371,8 +371,11 @@ Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,
 #' @export
 PlotEvaluationTable<-function(Evaluation.table){
     plot(NA,xlim=c(-0.2,5.2),ylim=c(-100,300), main="Total Expected Utility vs Number of Filters Applied",xlab="Number of Filters Applied",ylab="Total EU") # make an empty plot
-    #points(c(0:5),Evaluation.table$Eutility,type="b",pch=1,lwd=2) #Endometrial TEU
-
+    i<-as.numeric(dim(Evaluation.table)[1])-1
+    points(c(0:i),Evaluation.table$Eutility,type="b",pch=1,lwd=2)
+    text(c(0:i),Evaluation.table$Eutility,labels=paste(Evaluation.table$label,"(",Evaluation.table$nPairs,")"),pos=c(3,3,3))
+    points(c(0:i),Evaluation.table$Eutility1,type="b",pch=1,lwd=2)
+    text(c(0:i),Evaluation.table$Eutility1,labels=paste(Evaluation.table$label,"(",Evaluation.table$nPairs,")"),pos=c(3,3,3))
 }
 
 
