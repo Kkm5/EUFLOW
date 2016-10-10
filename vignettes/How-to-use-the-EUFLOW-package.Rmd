@@ -55,10 +55,7 @@ RNASEQDATA[1:9,1:5]
 RNASEQDATA[68:77,1:5]
 ```
 
-```{r}
-data(EvaluationExperimentSet2)
-dim(EvaluationExperimentSet2)
-```
+
 
 In the second data file we will use TCGA protein expression data on the samples. As above we will output only a subset. Alos note that as this is the reference dataset in this example only one identifier is represented rather than multiple workflow options.   
 ```{r}
@@ -92,6 +89,7 @@ Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
 Workflow.Data[[1]][1:9,1:5]
 Merged.options<-merge_tag_options(Workflow.Data)
 Merged.options[1:9,1:5]
+dim(Merged.options)
 ```
 The Model.quality.object is created to create a map between the Reference ids and the evaluation ids using the Model.quality.list function.
 
@@ -123,4 +121,47 @@ Workflow.Evaluation.table(Posterior.dataframe,Utp=1)
 PlotEvaluationTable(Evaluation.table)
 ```
 
+```{r}
 
+RNASEQDATAv1<-RNASEQDATA[1:67,]
+dim(RNASEQDATAv1)
+
+RNASEQDATAv1$X<-paste(sapply(strsplit(as.character(RNASEQDATAv1$X),"_"), "[", 1),"v3",sep="_")
+RNASEQtest<-rbind(RNASEQDATA,RNASEQDATAv1)
+RNASEQtest[1:9,1:5]
+dim(RNASEQtest)
+```
+```{r}
+
+EvaluationExperimentSet<-RNASEQtest
+ReferenceSet<-RPPADATA
+```
+
+```{r}
+Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+Workflow.Data[[1]][1:9,1:5]
+Merged.options<-merge_tag_options(Workflow.Data)
+Merged.options[1:9,1:5]
+dim(Merged.options)
+```
+
+```{r}
+Model.quality.object<-Model.quality.list(Merged.options)
+
+```
+```{r}
+Model.Quality<-Workflow.Criterion(Model.quality.object,method="pearson")
+head(as.data.frame(Model.Quality))
+```
+```{r}
+Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
+
+```
+
+```{r}
+Evaluation.table<-Workflow.Evaluation.table(Posterior.dataframe)
+Evaluation.table
+Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
+Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
+Workflow.Evaluation.table(Posterior.dataframe,Utp=1)
+PlotEvaluationTable(Evaluation.table)
