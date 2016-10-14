@@ -167,7 +167,3 @@ Workflow.Evaluation.table(Posterior.dataframe,Utp=1)
 PlotEvaluationTable(Evaluation.table)
 ```
 
-```{r}
-data(OVCancerFeatureCounts)
-OVCancerFeatureCounts[1:9,1:5]
-```
