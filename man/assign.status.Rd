@@ -16,7 +16,7 @@ assign.status(x, status, data.type, version)
 \item{Workflow}{path number}
 }
 \value{
-the taged identifier
+the taged identifier for further processing
 }
 \description{
 places tag on to an identifier

@@ -11,7 +11,7 @@ options(stringsAsFactors = FALSE)
 #' @param tag to determine the evaluation or reference status
 #' @param Workflow category
 #' @param Workflow path number
-#' @return the taged identifier
+#' @return the taged identifier for further processing
 #' @export
 #'
 assign.status<-function(x,status,data.type,version){

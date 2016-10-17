@@ -53,6 +53,11 @@ A small slice of this data file (RNASEQDATA) demonstrates the data structure of 
 data(RNASEQDATA)
 RNASEQDATA[1:9,1:5]
 RNASEQDATA[68:77,1:5]
+dim(RNASEQDATA)
+data(OVCancerFeatureCountsDATA)
+OVPICCOLO<-log2(OVCancerFeatureCountsDATA)
+OVPICCOLO[1:9,1:5]
+dim(OVPICCOLO)
 ```
 
 
@@ -62,6 +67,7 @@ In the second data file we will use TCGA protein expression data on the samples.
 data(RPPADATA.original)
 RPPADATA<-RPPADATA.original
 RPPADATA[1:9,1:5]
+
 ```
 We now have all that is required to run the EUFLOW package. For the purpose of clarity we define the RNASEQDATA set as the EvaluationExperimentSet, which includes 2 workflow options (RnaSeqV1 and RnaSeqv2). We also define the RPPADATA as the ReferenceSet. If it is the choice of the user multiple reference sets can be utilized. 
 

@@ -4,7 +4,7 @@
 \alias{PlotEvaluationTable}
 \title{PlotEvaluationTable}
 \usage{
-PlotEvaluationTable(Evaluation.table)
+PlotEvaluationTable(Evaluation.table, EvaluationOrder = "TEU")
 }
 \arguments{
 \item{Evaluation}{Table}
