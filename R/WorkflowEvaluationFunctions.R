@@ -7,11 +7,11 @@ options(stringsAsFactors = FALSE)
 #' assign.status
 #'
 #' places tag on to an identifier
-#' @param Dataframe which represent sthe Evaluation dataset or the Reference Dataset
-#' @param tag to determine the evaluation or reference status
-#' @param Workflow category
-#' @param Workflow path number
-#' @return the taged identifier for further processing
+#' @param x Dataframe which represent sthe Evaluation dataset or the Reference Dataset
+#' @param status tag to determine the evaluation or reference status
+#' @param data.type Workflow category
+#' @param version Workflow path number
+#' @return the tagged identifier for further processing
 #' @export
 #'
 assign.status<-function(x,status,data.type,version){
