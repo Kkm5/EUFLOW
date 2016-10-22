@@ -35,21 +35,6 @@ The magnitude of the path choices can be considered to be a great benefit to the
 
 In regards to bioinformatics workflow options can include ready-to-go data (a finished data set), custom workflows (user decides what steps to take), or use of a tuning parameter (i.e. requiring a certain level of data quality).  Any change in a workflow step or change of a parameter setting constitutes a new workflow option.  To what extent do these choices affect the final dataset to be analyzed? If the datasets differ substantially, will they differ in quality? If so, how can we tell which is best?  Finally, will soundness of the scientific conclusions be harmed by worse workflow options? Surprisingly little is known.  
 
-
-
-
-The contents of this package are:
-```{r}
-search() 
-
-```
-
-```{r}
-ls(pos=2)
-```
-
-We now test the package using How-touse-this-package.Rmd contents.
-
 Users are required to input two separate data files, regardless of the analysis type. The EUFLOW package depends upon a model quality heuristic which we will demonstate here as correlation between gene expression and protein expression. The first data file, for example, we will use ovarian TCGA RNASeq data on two separate workflows provided on the same samples. Only samples for which protein expression data was available are used in the RNASEQDATA file.
 
 A small slice of this data file (RNASEQDATA) demonstrates the data structure of numbered row names followed by a column of identifiers including a tag _v1 and _v2. The same samples were processed with two different workflow options RnaSeqv1 and RnaSeqv2. The output below shows the gene expression values for the first 9 identifiers (in this case gene names) with a tag to distinguish workflow option. For brevity only 4 of the 198 sample identifiers are represented.
@@ -75,12 +60,10 @@ EvaluationExperimentSet<-RNASEQDATA
 ReferenceSet<-RPPADATA
 ```
 
-<<<<<<< HEAD:inst/How-to-use-this-package.Rmd
 Now that we have the data for our example, the WorkflowEvaluationData function will modify the separate dataframes into one data structure to prepare to calcuate the model quality and perform the evaluation. The first item in the list is the Reference data and the second item in the list is the evaluation data.
 
 
-```{r,eval=FALSE}
->>>>>>> b14465839482afb2e774ee6fb04daaf40a92dda8:vignettes/How-to-use-the-EUFLOW-package.Rmd
+```{r,eval=TRUE}
 
 Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
 Workflow.Data[[1]][1:9,1:5]
@@ -89,8 +72,6 @@ Workflow.Data[[1]][1:9,1:5]
 Further data processing to determine the number of workflow options and structure tags will be used to name the output by creating a Merged.options object.
 
 ```{r}
-Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
-Workflow.Data[[1]][1:9,1:5]
 Merged.options<-merge_tag_options(Workflow.Data)
 Merged.options[1:9,1:5]
 ```
