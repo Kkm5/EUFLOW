@@ -1,7 +1,11 @@
+---
+output: pdf_document
+---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{How-to-use-the-EUFLOW-package}
 -->
+
 
 ---
 title: "EUFLOW: Expected-Utility-based Workflow Evaluation"
@@ -24,16 +28,11 @@ library("EUFLOW")
 options(stringsAsFactors = FALSE)
 system("touch I_ran_Rmd")
 ```
-### I.Introduction
+### I. Purpose of the EUFLOW package
 
-The data in bioinformatics is often in some “raw” form which is not yet ready for analysis. 
-Processing this data often involves several steps, called variously a workflow, pipeline, or protocol. 
-REWRITE THE REST OF THIS.
-One major obstacle to data reproducibility is workflows are rarely identical and the differences between workflow steps may not be the optimal way to process the data. 
-We define a workflow here as a series of steps that a user takes to arrive at the analysis goal. 
-The magnitude of the path choices can be considered to be a great benefit to the analyst, however, it is often the case that the user does not know which path to take.   
+The data in bioinformatics is often in some “raw” form which is not yet ready for analysis. Processing this data often involves several steps, called variously a workflow, pipeline, or protocol. We have developed the EUFLOW package to assist users who have multiple versions of data that arise from different *workflow paths*. Each of the *final processed data* files should contain similar features as the rows of the dataframe with columns of identical samples. The collective *workflow path data* is refered to as the *Evaluation Dataset*.  In order to evaluate the alternitive versions of the data the user must also provide a *Reference Dataset*, which is expected to have an expected *Model Quality* to the *Evaluation Dataset*.  
 
-In regards to bioinformatics workflow options can include ready-to-go data (a finished data set), custom workflows (user decides what steps to take), or use of a tuning parameter (i.e. requiring a certain level of data quality).  Any change in a workflow step or change of a parameter setting constitutes a new workflow option.  To what extent do these choices affect the final dataset to be analyzed? If the datasets differ substantially, will they differ in quality? If so, how can we tell which is best?  Finally, will soundness of the scientific conclusions be harmed by worse workflow options? Surprisingly little is known.  
+### II. Usage of EUFLOW
 
 Users are required to input two separate data files, regardless of the analysis type. The EUFLOW package depends upon a model quality heuristic which we will demonstate here as correlation between gene expression and protein expression. The first data file, for example, we will use ovarian TCGA RNASeq data on two separate workflows provided on the same samples. Only samples for which protein expression data was available are used in the RNASEQDATA file.
 
@@ -44,19 +43,29 @@ A small slice of this data file (RNASEQDATA) demonstrates the data structure of 
 data(RNASEQDATA)
 RNASEQDATA[1:9,1:5]
 RNASEQDATA[68:77,1:5]
+dim(RNASEQDATA)
+data(RNASEQV1v2PICCOLO)
+#OVPICCOLO<-log2(OVCancerFeatureCountsDATA)
+#OVPICCOLO[1:9,1:5]
+RNASEQV1v2PICCOLO[1:9,1:5]
+
 ```
 
-In the second data file we will use TCGA protein expression data on the sampe samples. As above we will output only a subset. Alos note that as this is the reference dataset in this example only one identifier is represented rather than multiple workflow options.   
+
+
+In the second data file we will use TCGA protein expression data on the samples. As above we will output only a subset. Alos note that as this is the reference dataset in this example only one identifier is represented rather than multiple workflow options.   
 ```{r}
 data(RPPADATA.original)
 RPPADATA<-RPPADATA.original
 RPPADATA[1:9,1:5]
+
 ```
 We now have all that is required to run the EUFLOW package. For the purpose of clarity we define the RNASEQDATA set as the EvaluationExperimentSet, which includes 2 workflow options (RnaSeqV1 and RnaSeqv2). We also define the RPPADATA as the ReferenceSet. If it is the choice of the user multiple reference sets can be utilized. 
 
 ```{r}
 
-EvaluationExperimentSet<-RNASEQDATA
+#EvaluationExperimentSet<-RNASEQDATA
+EvaluationExperimentSet<-RNASEQV1v2PICCOLO
 ReferenceSet<-RPPADATA
 ```
 
@@ -74,6 +83,7 @@ Further data processing to determine the number of workflow options and structur
 ```{r}
 Merged.options<-merge_tag_options(Workflow.Data)
 Merged.options[1:9,1:5]
+dim(Merged.options)
 ```
 The Model.quality.object is created to create a map between the Reference ids and the evaluation ids using the Model.quality.list function.
 
@@ -97,8 +107,14 @@ Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quali
 ```
 
 ```{r}
-Workflow.Evaluation.table(Posterior.dataframe)
+Evaluation.table<-Workflow.Evaluation.table(Posterior.dataframe)
+Evaluation.table
 Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
 Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
 Workflow.Evaluation.table(Posterior.dataframe,Utp=1)
+PlotEvaluationTable(Evaluation.table)
+
+#RNASEQDATAv1$X<-paste(sapply(strsplit(as.character(RNASEQDATAv1$X),"_"), "[", 1),"v3",sep="_")
 ```
+
+
