@@ -84,6 +84,8 @@ Further data processing to determine the number of workflow options and structur
 Merged.options<-merge_tag_options(Workflow.Data)
 Merged.options[1:9,1:5]
 dim(Merged.options)
+names(Merged.options)
+row.names(Merged.options)
 ```
 The Model.quality.object is created to create a map between the Reference ids and the evaluation ids using the Model.quality.list function.
 
@@ -116,5 +118,40 @@ PlotEvaluationTable(Evaluation.table)
 
 #RNASEQDATAv1$X<-paste(sapply(strsplit(as.character(RNASEQDATAv1$X),"_"), "[", 1),"v3",sep="_")
 ```
+
+```{r}
+data(BRCARPPADATAFINAL)
+BRCARPPADATAFINAL[1:9,1:5]
+dim(BRCARPPADATAFINAL)
+data(BRCASALMONDATAFINAL)
+BRCASALMONDATAFINAL[1:9,1:5]
+names(BRCASALMONDATAFINAL)
+names(BRCARPPADATAFINAL)
+names(EvaluationExperimentSet)
+names(ReferenceSet)
+```
+
+```{r}
+
+#EvaluationExperimentSet<-RNASEQDATA
+EvaluationExperimentSet<-BRCASALMONDATAFINAL
+ReferenceSet<-BRCARPPADATAFINAL
+```
+
+```{r,eval=TRUE}
+
+Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+Workflow.Data[[1]][1:9,1:5]
+
+```
+
+```{r}
+Merged.options<-merge_tag_options(Workflow.Data)
+Merged.options[1:9,1:5]
+dim(Merged.options)
+names(Merged.options)
+row.names(Merged.options)
+```
+
 
 
