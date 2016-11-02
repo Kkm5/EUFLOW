@@ -87,12 +87,40 @@ make.workflow.map <- function(Merged.options){
     }
     imax<-max(unique(sapply(strsplit(row.names(workflow_path_data),"_"), "[", 4)),na.rm = TRUE)
     workflow_path_matrix<-sapply(1:imax,count.options)
-    workflow_paths_combined<-sapply(1:dim(workflow_path_matrix)[1],function(i){
-        paste0(as.character(workflow_path_matrix[i,]),collapse=",")
-    })
-    WorkflowMap<-data.frame(reference,workflow_paths_combined)
+    if(class(workflow_path_matrix)=="matrix"){
+        workflow_paths_combined<-sapply(1:dim(workflow_path_matrix)[1],function(i){paste0(as.character(workflow_path_matrix[i,]),collapse=",")})
+        WorkflowMap<-data.frame(reference,workflow_paths_combined)
+    }
+    if(class(workflow_path_matrix)!="matrix"){
+        ref_ids<-sapply(strsplit(row.names(Merged.options),"_"), "[", 1)[1:length(reference)]
+        ref_ids_df<-as.data.frame(ref_ids)
+        ref_ids_df$positions<-row.names(ref_ids_df)
+        workflow_path_df<-as.data.frame(unlist(workflow_path_matrix))
+        names(workflow_path_df)<-"path_ids"
+        Symbol<-sapply(strsplit(as.character(workflow_path_df$path_ids),"_"), "[", 1)
+        workflow_path_df$positions<-as.character(match(Symbol,ref_ids))
+        workflow_paths_combined_df<-merge(workflow_path_df,ref_ids_df,by="positions")
+        workflow_paths_combined<-sapply(ref_ids,function(i){paste0(workflow_paths_combined_df[workflow_paths_combined_df$ref_ids ==as.character(i),]$path_ids,collapse=",")})
+        workflow_paths_combined<-as.data.frame(workflow_paths_combined)
+        WorkflowMap<-data.frame(reference,workflow_paths_combined$workflow_paths_combined)
+        names(WorkflowMap)<-c("reference","workflow_paths_combined")
+    }
     return(WorkflowMap)
 }
+#make.workflow.map <- function(Merged.options){
+#    reference<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "reference",])
+#    workflow_path_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "path",]
+#    count.options<-function(x) {
+#        paste(row.names(workflow_path_data[sapply(strsplit(row.names(workflow_path_data),"_"), "[", 4) == x,]))
+#    }
+#    imax<-max(unique(sapply(strsplit(row.names(workflow_path_data),"_"), "[", 4)),na.rm = TRUE)
+#    workflow_path_matrix<-sapply(1:imax,count.options)
+#    workflow_paths_combined<-sapply(1:dim(workflow_path_matrix)[1],function(i){
+#        paste0(as.character(workflow_path_matrix[i,]),collapse=",")
+#    })
+#    WorkflowMap<-data.frame(reference,workflow_paths_combined)
+#    return(WorkflowMap)
+#}
 #make.workflow.map <- function(Merged.options){
 #    count.options<-function(x) {
 #        paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == x,]))
