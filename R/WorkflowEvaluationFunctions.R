@@ -382,13 +382,29 @@ Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,
     colnames(WorkflowStats)[1]<-"Marker"
     colnames(WorkflowStats)[2]<-"WorkflowID"
     WorkflowLabel<-as.data.frame(strsplit(WorkflowStats$workflow_paths_combined[1],"_"))[3,]
-    Evaluation.table<-expectedUtility(label="Use All", dataset=WorkflowStats,Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
-    for(p in unique(WorkflowStats$WorkflowID)){
-        set<-expectedUtility(label=paste(WorkflowLabel,as.character(WorkflowStats$WorkflowID[as.numeric(p)])), dataset=WorkflowStats[WorkflowStats$WorkflowID==as.numeric(p),],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
-        Evaluation.table=rbind(Evaluation.table,set)
+    types<-2:max(WorkflowStats$WorkflowID)
+    Evaluation.table<-expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==1,],label=paste(WorkflowLabel,as.character(1)))
+    for(i in types){
+        Evaluation.table<-rbind(Evaluation.table,expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==i,],label=paste(WorkflowLabel,as.character(i))))
     }
+
+    #Evaluation.table<-expectedUtility(label=paste(WorkflowLabel,as.character(WorkflowStats$WorkflowID==2)), dataset=WorkflowStats[WorkflowStats$WorkflowID==2,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
     return(Evaluation.table)
 }
+#Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
+#
+#    WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",4),Posterior.dataframe)
+#    colnames(WorkflowStats)[1]<-"Marker"
+#    colnames(WorkflowStats)[2]<-"WorkflowID"
+#    WorkflowLabel<-as.data.frame(strsplit(WorkflowStats$workflow_paths_combined[1],"_"))[3,]
+#    Evaluation.table<-expectedUtility(label="Use All", dataset=WorkflowStats,Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
+#    OrderWorkflow<-sort(as.numeric(unique(WorkflowStats$WorkflowID)))
+#    for(p in OrderWorkflow){
+#        set<-expectedUtility(label=paste(WorkflowLabel,as.character(WorkflowStats$WorkflowID[as.numeric(p)])), dataset=WorkflowStats[WorkflowStats$WorkflowID==as.numeric(p),],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
+#        Evaluation.table=rbind(Evaluation.table,set)
+#    }
+#    return(Evaluation.table)
+#}
 
 #' PlotEvaluationTable
 #'
@@ -402,12 +418,12 @@ PlotEvaluationTable<-function(Evaluation.table,EvaluationOrder="TEU"){
     if(EvaluationOrder=="TEU"){
         plot(NA,xlim=c(-0.2,5.2),ylim=c(-100,300),main=paste(EvaluationOrder," vs Number of Filters Applied"),xlab="Number of Filters Applied",ylab=as.character(EvaluationOrder)) # make an empty plot
         points(c(0:i),Evaluation.table$Eutility,type="b",pch=1,lwd=2)
-        text(c(0:i),Evaluation.table$Eutility,labels=paste(Evaluation.table$label,"(",Evaluation.table$nPairs,")"),pos=c(3,3,3))
+        text(c(0:i),Evaluation.table$Eutility,labels=Evaluation.table$label,pos=c(3,3,3))
     }
     if(EvaluationOrder=="MEU"){
         plot(NA,xlim=c(-0.2,5.2),ylim=c(-1,3),main=paste(EvaluationOrder," vs Number of Filters Applied"),xlab="Number of Filters Applied",ylab=as.character(EvaluationOrder)) # make an empty plot
         points(c(0:i),Evaluation.table$Eutility1,type="b",pch=1,lwd=2)
-        text(c(0:i),Evaluation.table$Eutility1,labels=paste(Evaluation.table$label,"(",Evaluation.table$nPairs,")"),pos=c(3,3,3))
+        text(c(0:i),Evaluation.table$Eutility1,labels=Evaluation.table$label,pos=c(3,3,3))
     }
 }
 
