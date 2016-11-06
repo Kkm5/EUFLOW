@@ -36,11 +36,9 @@ The data in bioinformatics is often in some “raw” form which is not yet read
 
 Users are required to input two separate data files, regardless of the analysis type. The EUFLOW package depends upon a model quality heuristic which we will demonstate here as correlation between gene expression and protein expression. The first data file, for example, we will use ovarian TCGA RNASeq data on two separate workflows provided on the same samples. Only samples for which protein expression data was available are used in the RNASEQDATA file, the HUGO Gene names and descriptions for these proteins are presented in the table below. 
 
-```{r}
-data(RPPADATA.original)
-RPPADATA<-RPPADATA.original
-RPPADATA$X
-```
+
+
+
 
 A small slice of this data file (RNASEQDATA) demonstrates the data structure of numbered row names followed by a column of identifiers including a tag _v1 and _v2. The same samples were processed with two different workflow options RnaSeqv1 and RnaSeqv2. The output below shows the gene expression values for the first 9 identifiers (in this case gene names) with a tag to distinguish workflow option. For brevity only 4 of the 198 sample identifiers are represented.
 
