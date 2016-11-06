@@ -1,5 +1,5 @@
 ---
-output: pdf_document
+output: word_document
 ---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
@@ -30,11 +30,17 @@ system("touch I_ran_Rmd")
 ```
 ### I. Purpose of the EUFLOW package
 
-The data in bioinformatics is often in some “raw” form which is not yet ready for analysis. Processing this data often involves several steps, called variously a workflow, pipeline, or protocol. We have developed the EUFLOW package to assist users who have multiple versions of data that arise from different *workflow paths*. Each of the *final processed data* files should contain similar features as the rows of the dataframe with columns of identical samples. The collective *workflow path data* is refered to as the *Evaluation Dataset*.  In order to evaluate the alternitive versions of the data the user must also provide a *Reference Dataset*, which is expected to have an expected *Model Quality* to the *Evaluation Dataset*.  
+The data in bioinformatics is often in some “raw” form which is not yet ready for analysis. Processing this data often involves several steps, called variously a workflow, pipeline, or protocol. We have developed the EUFLOW package to assist users who have multiple versions of data that arise from different *workflow paths*. Each of the *final processed data* files should contain similar features as the rows of the dataframe with columns of identical samples. The collective *workflow path data* is refered to as the *Evaluation Dataset*.  In order to evaluate the alternitive versions of the data the user must also provide a *Reference Dataset*. The Evaluation Dataset and the Reference Dataset must have an expected quantitative relationship, such as mRNA/protein coorelation. The EUFLOW package utilizes this relationship (*Model Quality*) through our methodology to determine the *Expected Utility* for each of the *workflow paths*.  
 
 ### II. Usage of EUFLOW
 
-Users are required to input two separate data files, regardless of the analysis type. The EUFLOW package depends upon a model quality heuristic which we will demonstate here as correlation between gene expression and protein expression. The first data file, for example, we will use ovarian TCGA RNASeq data on two separate workflows provided on the same samples. Only samples for which protein expression data was available are used in the RNASEQDATA file.
+Users are required to input two separate data files, regardless of the analysis type. The EUFLOW package depends upon a model quality heuristic which we will demonstate here as correlation between gene expression and protein expression. The first data file, for example, we will use ovarian TCGA RNASeq data on two separate workflows provided on the same samples. Only samples for which protein expression data was available are used in the RNASEQDATA file, the HUGO Gene names and descriptions for these proteins are presented in the table below. 
+
+```{r}
+data(RPPADATA.original)
+RPPADATA<-RPPADATA.original
+RPPADATA$X
+```
 
 A small slice of this data file (RNASEQDATA) demonstrates the data structure of numbered row names followed by a column of identifiers including a tag _v1 and _v2. The same samples were processed with two different workflow options RnaSeqv1 and RnaSeqv2. The output below shows the gene expression values for the first 9 identifiers (in this case gene names) with a tag to distinguish workflow option. For brevity only 4 of the 198 sample identifiers are represented.
 
@@ -42,8 +48,6 @@ A small slice of this data file (RNASEQDATA) demonstrates the data structure of 
 ```{r}
 data(RNASEQDATA)
 RNASEQDATA[1:9,1:5]
-RNASEQDATA[68:77,1:5]
-dim(RNASEQDATA)
 data(RNASEQV1v2PICCOLO)
 #OVPICCOLO<-log2(OVCancerFeatureCountsDATA)
 #OVPICCOLO[1:9,1:5]
