@@ -1,6 +1,7 @@
 #require(IdMappingAnalysis)
 #require(mvbutils)
 options(stringsAsFactors = FALSE)
+options(digits=3)
 #
 # #############example
 
@@ -364,6 +365,7 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
                         Lfalse= Lfalse<-PrFalse * Lfp,
                         Eutility1= Utrue-Lfalse,
                         Eutility= nrow(dataset)*(Utrue-Lfalse))
+#    result = data.frame(PrPlus= PrPlus,PrTrue= PrTrue<-PrPlus / deltaPlus,PrFalse= PrFalse<-1 - PrTrue,Utrue=  Utrue<-PrTrue * Utp,Lfalse= Lfalse<-PrFalse * Lfp,Eutility1= Utrue-Lfalse,Eutility= nrow(dataset)*(Utrue-Lfalse))
     rownames(result) = label
     return(result)
 }
@@ -383,9 +385,9 @@ Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,
     colnames(WorkflowStats)[2]<-"WorkflowID"
     WorkflowLabel<-as.data.frame(strsplit(WorkflowStats$workflow_paths_combined[1],"_"))[3,]
     types<-2:max(WorkflowStats$WorkflowID)
-    Evaluation.table<-expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==1,],label=paste(WorkflowLabel,as.character(1)))
+    Evaluation.table<-expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==1,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=paste(WorkflowLabel,as.character(1)))
     for(i in types){
-        Evaluation.table<-rbind(Evaluation.table,expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==i,],label=paste(WorkflowLabel,as.character(i))))
+        Evaluation.table<-rbind(Evaluation.table,expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==i,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=paste(WorkflowLabel,as.character(i))))
     }
 
     #Evaluation.table<-expectedUtility(label=paste(WorkflowLabel,as.character(WorkflowStats$WorkflowID==2)), dataset=WorkflowStats[WorkflowStats$WorkflowID==2,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
