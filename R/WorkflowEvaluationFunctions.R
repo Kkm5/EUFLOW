@@ -276,7 +276,7 @@ fit2clusters.workflow<-function(Y, Ysigsq,
                         piStar[g]*dnorm(Ytemp, psiStar[g], sqrt(VStar[g]  + mean(Ysigsq))))
     lines(density(Y), lwd=2, col="black")
     abline(v = 0)
-    abline(v = 0.38352)
+    #abline(v = 0.38352)
     ###  Should we make a better choice than the means of the Ysigsq?
     if(testMe) lines(col="red", Ytemp<-seq(-1,1,length=100),
                      piStar[1]*dnorm(Ytemp, simPsi[1], sqrt(simV[1] + mean(simData$Ysigsq)))
@@ -355,17 +355,17 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
     postProbVar = pmax(dataset$postProbVar, guarantee)
     PrPlus = sum(dataset$postProbs/postProbVar)/
         sum(1/postProbVar)
-    result = data.frame(label=label,
-                        Utp=Utp, Lfp=Lfp, deltaPlus=deltaPlus,
-                        nPairs=nrow(dataset),
-                        PrPlus= PrPlus,
-                        PrTrue= PrTrue<-PrPlus / deltaPlus,
-                        PrFalse= PrFalse<-1 - PrTrue,
-                        Utrue=  Utrue<-PrTrue * Utp,
-                        Lfalse= Lfalse<-PrFalse * Lfp,
-                        Eutility1= Utrue-Lfalse,
-                        Eutility= nrow(dataset)*(Utrue-Lfalse))
-#    result = data.frame(PrPlus= PrPlus,PrTrue= PrTrue<-PrPlus / deltaPlus,PrFalse= PrFalse<-1 - PrTrue,Utrue=  Utrue<-PrTrue * Utp,Lfalse= Lfalse<-PrFalse * Lfp,Eutility1= Utrue-Lfalse,Eutility= nrow(dataset)*(Utrue-Lfalse))
+#     result = data.frame(label=label,
+#                         Utp=Utp, Lfp=Lfp, deltaPlus=deltaPlus,
+#                         nPairs=nrow(dataset),
+#                         PrPlus= PrPlus,
+#                         PrTrue= PrTrue<-PrPlus / deltaPlus,
+#                         PrFalse= PrFalse<-1 - PrTrue,
+#                         Utrue=  Utrue<-PrTrue * Utp,
+#                         Lfalse= Lfalse<-PrFalse * Lfp,
+#                         Eutility1= Utrue-Lfalse,
+#                         Eutility= nrow(dataset)*(Utrue-Lfalse))
+    result = data.frame(PrPlus= PrPlus,PrTrue= PrTrue<-PrPlus / deltaPlus,PrFalse= PrFalse<-1 - PrTrue,Utrue=  Utrue<-PrTrue * Utp,Lfalse= Lfalse<-PrFalse * Lfp,Eutility1= Utrue-Lfalse,Eutility= nrow(dataset)*(Utrue-Lfalse))
     rownames(result) = label
     return(result)
 }

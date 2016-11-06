@@ -1,5 +1,5 @@
 ---
-output: pdf_document
+output: html_document
 ---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
@@ -37,10 +37,7 @@ The data in bioinformatics is often in some “raw” form which is not yet read
 
 Users are required to input two separate data files, regardless of the analysis type. The EUFLOW package depends upon a model quality heuristic which we will demonstate here as correlation between gene expression and protein expression. The first data file, for example, we will use ovarian TCGA RNASeq data on two separate workflows provided on the same samples. Only samples for which protein expression data was available are used in the RNASEQDATA file, the HUGO Gene names and descriptions for these proteins are presented in the table below.
 
-```{r}
-data("Describe_hgnc_map")
-Describe_hgnc_map
-```
+
 
 A small slice of this data file (RNASEQDATA) demonstrates the data structure of numbered row names followed by a column of identifiers including a tag _v1 and _v2. The same samples were processed with two different workflow options RnaSeqv1 and RnaSeqv2. The output below shows the gene expression values for the first 9 identifiers (in this case gene names) with a tag to distinguish workflow option. For brevity only 4 of the 198 sample identifiers are represented.
 
@@ -73,13 +70,11 @@ Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
 Workflow.Data[[1]][1:9,1:3]
 
 ```
-Labels are assigned using the function to create a data structure that can sort by Reference identifiers and Evaluation identifiers. The tags are _reference for the reference samples
+Labels are assigned using the function to create a data structure that can sort by Reference identifiers and Evaluation identifiers. The tags are _reference for the reference data and _path for the Evaluation data. In addition the Evaluation data tags have a Workflow label to specify the type of evaluation data. 
 
 ```{r}
 Merged.options<-merge_tag_options(Workflow.Data)
 Merged.options[1:9,1:3]
-Merged.options[200:209,1:3]
-
 ```
 The Model.quality.object is created to create a map between the Reference ids and the evaluation ids using the Model.quality.list function. This map is required by the IdMappingAnalysis package
 
@@ -87,85 +82,86 @@ The Model.quality.object is created to create a map between the Reference ids an
 Model.quality.object<-Model.quality.list(Merged.options)
 
 ```
-Next, Model Quality is an object which contains the model quality values for each of the pairs. How the Model quality is determined is specified by the user. In this example Pearson correlation values are determined for each Reference-Evaluation pair across all samples.
+Next, Model Quality is an object which contains the model quality values for each of the pairs. How the Model quality is determined is specified by the user. In this example Pearson correlation r values are calculated for each Reference-Evaluation pair across all samples by the Workflow.Criterion function.
 
 ```{r}
 Model.Quality<-Workflow.Criterion(Model.quality.object,method="pearson")
 head(as.data.frame(Model.Quality))
 ```
+
+The Model quality method can be altered using the "method"" argument in the Workflow.criterion function. Sperman r values are calculated in this example.
 
 ```{r}
 Model.Quality<-Workflow.Criterion(Model.quality.object,method="spearman")
 head(as.data.frame(Model.Quality))
 ```
+Next the correlation values and the reference-evaluation pairs are are the input to the Workflow.posteriorestimate function. The first step of this function is to apply a bootstrapping procedure to obtain a resampled standard deviation and bias of the model quality values. Next the vector of correlation r values, the variance, and the bias are the input to the EM procedure to estimate the posterior probability and posterior probability variance of belonging to the "+" component. In the figure below a mixture distribution is estmated that has 2 components where one component represents the "+" component and the 0 centered component represents the "-" and "0" component.   
 
-```{r}
+```{r,message=FALSE}
 Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
-
+head(Posterior.dataframe)
 ```
+
+A user can now input values for the *Utility of a true positive Utp*, *Loss of a false positive Lfp*, a *deltaPlus* value, and a *guarantee* threshold for the estimation of the *Expected Value* of each method. Evaluation.table will take the input value of Posterior.dataframe to calculate the following values: 
+
+*PrPlus= PrPlus*
+*PrTrue= PrTrue<-PrPlus / deltaPlus*
+*PrFalse= PrFalse<-1 - PrTrue*
+*Utrue=  Utrue<-PrTrue * Utp*
+*Lfalse= Lfalse<-PrFalse * Lfp*
+*Eutility1= Utrue-Lfalse*
+*Eutility= nrow(dataset)X(Utrue-Lfalse))*
+
+This table is estimated from the default values of Utp=1,Lfp=1, deltaPlus =1, and guarantee=1e-5.
 
 ```{r}
 Evaluation.table<-Workflow.Evaluation.table(Posterior.dataframe)
 Evaluation.table
+
+```
+A change of the deltaPlus parameter changes the proportional relationship between PrPlus and PrTrue. and Changing the Utlity of a True positive places more user utility on the true positive value as opposed to the false positive.
+
+```{r}
 Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
 Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
-Workflow.Evaluation.table(Posterior.dataframe,Utp=1)
-PlotEvaluationTable(Evaluation.table)
 
-#RNASEQDATAv1$X<-paste(sapply(strsplit(as.character(RNASEQDATAv1$X),"_"), "[", 1),"v3",sep="_")
 ```
+
+
+### III. Examples of EUFLOW Experiments
+
+
+In each of the following examples the EUFLOW package will be used to evaluate a workflow path decision on real data. The first example is an RNASeq experiment on ovarian samples across three different workflow paths, RNASeqV1, RNASeqV2, and the PICCOLO workflow path. 
 
 ```{r}
 data(RNASEQV1v2PICCOLO)
-#OVPICCOLO<-log2(OVCancerFeatureCountsDATA)
-#OVPICCOLO[1:9,1:5]
-RNASEQV1v2PICCOLO[1:9,1:5]
 EvaluationExperimentSet<-RNASEQV1v2PICCOLO
-```
-
-
-```{r}
-data(BRCARPPADATAFINAL)
-BRCARPPADATAFINAL[1:9,1:5]
-dim(BRCARPPADATAFINAL)
-data(BRCASALMONDATAFINAL)
-BRCASALMONDATAFINAL[1:9,1:5]
-names(BRCASALMONDATAFINAL)
-names(BRCARPPADATAFINAL)
-names(EvaluationExperimentSet)
-names(ReferenceSet)
-```
-
-```{r}
-
-#EvaluationExperimentSet<-RNASEQDATA
-EvaluationExperimentSet<-BRCASALMONDATAFINAL
-ReferenceSet<-BRCARPPADATAFINAL
-```
-
-```{r,eval=TRUE}
-
+ReferenceSet<-RPPADATA
 Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
-Workflow.Data[[1]][1:9,1:5]
-
-```
-
-```{r}
 Merged.options<-merge_tag_options(Workflow.Data)
-Merged.options[1:9,1:5]
-dim(Merged.options)
-names(Merged.options)
-row.names(Merged.options)
-
 Model.quality.object<-Model.quality.list(Merged.options)
 Model.Quality<-Workflow.Criterion(Model.quality.object,method="pearson")
-head(as.data.frame(Model.Quality))
 Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
 Evaluation.table<-Workflow.Evaluation.table(Posterior.dataframe)
 Evaluation.table
-Workflow.Evaluation.table(Posterior.dataframe,deltaPlus = 2)
-Workflow.Evaluation.table(Posterior.dataframe,Utp=3)
-Workflow.Evaluation.table(Posterior.dataframe,Utp=1)
+```
+The second experiment uses the BRCA-TCGA data.
+
+```{r}
+data(BRCARPPADATAFINAL)
+dim(BRCARPPADATAFINAL)
+data(BRCASALMONDATAFINAL)
+EvaluationExperimentSet<-BRCASALMONDATAFINAL
+ReferenceSet<-BRCARPPADATAFINAL
+Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+Merged.options<-merge_tag_options(Workflow.Data)
+Model.quality.object<-Model.quality.list(Merged.options)
+Model.Quality<-Workflow.Criterion(Model.quality.object,method="pearson")
+Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
+Evaluation.table<-Workflow.Evaluation.table(Posterior.dataframe)
+Evaluation.table
 PlotEvaluationTable(Evaluation.table)
 ```
+
+
 
