@@ -365,7 +365,7 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
 #                         Lfalse= Lfalse<-PrFalse * Lfp,
 #                         Eutility1= Utrue-Lfalse,
 #                         Eutility= nrow(dataset)*(Utrue-Lfalse))
-    result = data.frame(PrPlus= PrPlus,PrTrue= PrTrue<-PrPlus / deltaPlus,PrFalse= PrFalse<-1 - PrTrue,Utrue=  Utrue<-PrTrue * Utp,Lfalse= Lfalse<-PrFalse * Lfp,Eutility1= Utrue-Lfalse,Eutility= nrow(dataset)*(Utrue-Lfalse))
+    result = data.frame(nPairs=nrow(dataset),PrPlus= PrPlus,PrTrue= PrTrue<-PrPlus / deltaPlus,PrFalse= PrFalse<-1 - PrTrue,Utrue=  Utrue<-PrTrue * Utp,Lfalse= Lfalse<-PrFalse * Lfp,Eutility1= Utrue-Lfalse,Eutility= nrow(dataset)*(Utrue-Lfalse))
     rownames(result) = label
     return(result)
 }

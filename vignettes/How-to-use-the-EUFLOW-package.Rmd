@@ -164,4 +164,20 @@ PlotEvaluationTable(Evaluation.table)
 ```
 
 
+```{r}
+data(BRCATHRESHOLD)
+EvaluationExperimentSet<-BRCATHRESHOLD
+ReferenceSet<-BRCARPPADATAFINAL
+Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
+head(Workflow.Data)
+Merged.options<-merge_tag_options(Workflow.Data)
+Model.quality.object<-Model.quality.list(Merged.options)
+Model.Quality<-Workflow.Criterion(Model.quality.object,method="pearson")
+Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
+Evaluation.table<-Workflow.Evaluation.table(Posterior.dataframe)
+Evaluation.table
+PlotEvaluationTable(Evaluation.table)
+```
+
+
 
