@@ -62,7 +62,7 @@ merge_tag_options<-function(Workflow.Data,ReferenceTag="Protein",EvaluationTag="
         Evaluation_dataframe<-as.data.frame(EvaluationList[[o]])
         SymbolList<-strsplit(row.names(Evaluation_dataframe),"_")
         row.names(Evaluation_dataframe)<-sapply(SymbolList, "[", 1)
-        row.names(Evaluation_dataframe)<-assign.status(Evaluation_dataframe,status="workflow_path",EvaluationTag,o)
+        row.names(Evaluation_dataframe)<-assign.status(Evaluation_dataframe,status="workflow_path",EvaluationTag[o],o)
         Merged.options=rbind(Merged.options,Evaluation_dataframe)
     }
     return(Merged.options)
@@ -108,34 +108,7 @@ make.workflow.map <- function(Merged.options){
     }
     return(WorkflowMap)
 }
-#make.workflow.map <- function(Merged.options){
-#    reference<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "reference",])
-#    workflow_path_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "path",]
-#    count.options<-function(x) {
-#        paste(row.names(workflow_path_data[sapply(strsplit(row.names(workflow_path_data),"_"), "[", 4) == x,]))
-#    }
-#    imax<-max(unique(sapply(strsplit(row.names(workflow_path_data),"_"), "[", 4)),na.rm = TRUE)
-#    workflow_path_matrix<-sapply(1:imax,count.options)
-#    workflow_paths_combined<-sapply(1:dim(workflow_path_matrix)[1],function(i){
-#        paste0(as.character(workflow_path_matrix[i,]),collapse=",")
-#    })
-#    WorkflowMap<-data.frame(reference,workflow_paths_combined)
-#    return(WorkflowMap)
-#}
-#make.workflow.map <- function(Merged.options){
-#    count.options<-function(x) {
-#        paste(row.names(workflow_options_data[sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4) == x,]))
-#    }
 
-#    drivers<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "DRIVER",])
-#    workflow_options_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "WFO",]
-#    imax<-max(unique(sapply(strsplit(row.names(workflow_options_data),"_"), "[", 4)),na.rm = TRUE)
-#    workflow_options_matrix<-sapply(1:imax,count.options)
-#    workflow_options_merged<-sapply(1:dim(workflow_options_matrix)[1],function(i){paste0(as.character(workflow_options_matrix[i,]),collapse=",")})
-#    WorkflowMap<-data.frame(drivers,workflow_options_merged)
-#    ###when your ready class(Merged.options)<- "WorkflowMap"
-#    return(WorkflowMap)
-#}
 
 #' Model.quality.list
 #'
@@ -379,34 +352,21 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
 #' @return Nicely formatted table of posterior probabilities, Pr(+) and Pr(-), standard deviations, model quality scores, and biases.
 #' @export
 Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
-
     WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",4),Posterior.dataframe)
     colnames(WorkflowStats)[1]<-"Marker"
     colnames(WorkflowStats)[2]<-"WorkflowID"
+
     WorkflowLabel<-as.data.frame(strsplit(WorkflowStats$workflow_paths_combined[1],"_"))[3,]
     types<-2:max(WorkflowStats$WorkflowID)
-    Evaluation.table<-expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==1,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=paste(WorkflowLabel,as.character(1)))
+    Evaluation.table<-expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==1,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=paste(WorkflowLabel))
     for(i in types){
-        Evaluation.table<-rbind(Evaluation.table,expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==i,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=paste(WorkflowLabel,as.character(i))))
+        Evaluation.table<-rbind(Evaluation.table,expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==i,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=paste(as.data.frame(strsplit(WorkflowStats$workflow_paths_combined[i],"_"))[3,])))
     }
-
+    #print(unique(as.data.frame(strsplit(WorkflowStats$workflow_paths_combined,"_"))[3,]))
     #Evaluation.table<-expectedUtility(label=paste(WorkflowLabel,as.character(WorkflowStats$WorkflowID==2)), dataset=WorkflowStats[WorkflowStats$WorkflowID==2,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
     return(Evaluation.table)
 }
-#Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
-#
-#    WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",4),Posterior.dataframe)
-#    colnames(WorkflowStats)[1]<-"Marker"
-#    colnames(WorkflowStats)[2]<-"WorkflowID"
-#    WorkflowLabel<-as.data.frame(strsplit(WorkflowStats$workflow_paths_combined[1],"_"))[3,]
-#    Evaluation.table<-expectedUtility(label="Use All", dataset=WorkflowStats,Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
-#    OrderWorkflow<-sort(as.numeric(unique(WorkflowStats$WorkflowID)))
-#    for(p in OrderWorkflow){
-#        set<-expectedUtility(label=paste(WorkflowLabel,as.character(WorkflowStats$WorkflowID[as.numeric(p)])), dataset=WorkflowStats[WorkflowStats$WorkflowID==as.numeric(p),],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
-#        Evaluation.table=rbind(Evaluation.table,set)
-#    }
-#    return(Evaluation.table)
-#}
+
 
 #' PlotEvaluationTable
 #'
@@ -420,24 +380,14 @@ PlotEvaluationTable<-function(Evaluation.table,EvaluationOrder="TEU"){
     if(EvaluationOrder=="TEU"){
         plot(NA,xlim=c(-0.2,5.2),ylim=c(-100,300),main=paste(EvaluationOrder," vs Number of Filters Applied"),xlab="Number of Filters Applied",ylab=as.character(EvaluationOrder)) # make an empty plot
         points(c(0:i),Evaluation.table$Eutility,type="b",pch=1,lwd=2)
-        text(c(0:i),Evaluation.table$Eutility,labels=Evaluation.table$label,pos=c(3,3,3))
+        text(c(0:i),Evaluation.table$Eutility,labels=row.names(Evaluation.table),pos=c(3,3,3))
     }
     if(EvaluationOrder=="MEU"){
         plot(NA,xlim=c(-0.2,5.2),ylim=c(-1,3),main=paste(EvaluationOrder," vs Number of Filters Applied"),xlab="Number of Filters Applied",ylab=as.character(EvaluationOrder)) # make an empty plot
         points(c(0:i),Evaluation.table$Eutility1,type="b",pch=1,lwd=2)
-        text(c(0:i),Evaluation.table$Eutility1,labels=Evaluation.table$label,pos=c(3,3,3))
+        text(c(0:i),Evaluation.table$Eutility1,labels=row.names(Evaluation.table),pos=c(3,3,3))
     }
 }
-
-
-#points(c(0:5),resultTEUOptimize$Eutility,type="b",pch=1,lwd=2) #Endometrial TEU
-#points(c(0:2),resultTEUOptimizeOvarian$Eutility,type="b",pch=1,lty=2,lwd=2) #Ovarian TEU
-
-#resultTEUOptimize$label2<-c("All","J","GSPE","GSEN","AG","GQ")
-#text(c(0:5),resultTEUOptimize$Eutility,labels=paste(resultTEUOptimize$label2,"(",resultTEUOptimize$nPairs,")"),pos=c(4,2,3,3,3,3))
-#text(c(0:2),resultTEUOptimizeOvarian$Eutility,labels=paste(resultTEUOptimizeOvarian$label2,"(",resultTEUOptimizeOvarian$nPairs,")"),pos=c(3,3,3))
-
-#legend(locator(1),c("Ovarian TCGA", "Endometrial GynCOE"), lty = c(2,1))
 
 
 
