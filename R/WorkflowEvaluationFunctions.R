@@ -355,15 +355,15 @@ Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,
     WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",4),Posterior.dataframe)
     colnames(WorkflowStats)[1]<-"Marker"
     colnames(WorkflowStats)[2]<-"WorkflowID"
-
-    WorkflowLabel<-as.data.frame(strsplit(WorkflowStats$workflow_paths_combined[1],"_"))[3,]
+    WorkflowLabelDF<-WorkflowStats[WorkflowStats$WorkflowID==1,]
+    WorkflowLabel<-as.data.frame(strsplit(WorkflowLabelDF$workflow_paths_combined[1],"_"))[3,]
     types<-2:max(WorkflowStats$WorkflowID)
-    Evaluation.table<-expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==1,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=paste(WorkflowLabel))
+    Evaluation.table<-expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==1,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=WorkflowLabel)
     for(i in types){
-        Evaluation.table<-rbind(Evaluation.table,expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==i,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=paste(as.data.frame(strsplit(WorkflowStats$workflow_paths_combined[i],"_"))[3,])))
+        WorkflowLabelDF<-WorkflowStats[WorkflowStats$WorkflowID==i,]
+        WorkflowLabel<-as.data.frame(strsplit(WorkflowLabelDF$workflow_paths_combined[i],"_"))[3,]
+        Evaluation.table<-rbind(Evaluation.table,expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==i,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=WorkflowLabel))
     }
-    #print(unique(as.data.frame(strsplit(WorkflowStats$workflow_paths_combined,"_"))[3,]))
-    #Evaluation.table<-expectedUtility(label=paste(WorkflowLabel,as.character(WorkflowStats$WorkflowID==2)), dataset=WorkflowStats[WorkflowStats$WorkflowID==2,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee)
     return(Evaluation.table)
 }
 
