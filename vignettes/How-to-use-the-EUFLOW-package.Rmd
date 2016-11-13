@@ -154,7 +154,7 @@ data(BRCASALMONDATAFINAL)
 EvaluationExperimentSet<-BRCASALMONDATAFINAL
 ReferenceSet<-BRCARPPADATAFINAL
 Workflow.Data<-WorkflowEvaluationData(EvaluationExperimentSet,ReferenceSet)
-Merged.options<-merge_tag_options(Workflow.Data,EvaluationTag=c("A","B","C","D","E"))
+Merged.options<-merge_tag_options(Workflow.Data,EvaluationTag=c("AllGeneIDs","TransmembraneGenesOnly","Non-TransmembraneGenes","Low-Complexity","High-Complexity"))
 Model.quality.object<-Model.quality.list(Merged.options)
 Model.Quality<-Workflow.Criterion(Model.quality.object,method="pearson")
 Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
@@ -162,7 +162,6 @@ Evaluation.table<-Workflow.Evaluation.table(Posterior.dataframe)
 Evaluation.table
 PlotEvaluationTable(Evaluation.table)
 ```
-
 
 ```{r}
 data(BRCATHRESHOLD)
