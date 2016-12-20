@@ -1,5 +1,5 @@
 ---
-output: pdf_document
+output: word_document
 ---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
@@ -160,6 +160,32 @@ Model.Quality<-Workflow.Criterion(Model.quality.object,method="pearson")
 Posterior.dataframe<-Workflow.posteriorestimate(Model.quality.object,Model.Quality)
 Evaluation.table<-Workflow.Evaluation.table(Posterior.dataframe)
 Evaluation.table
+Evaluation.tableL2<-Workflow.Evaluation.table(Posterior.dataframe,Lfp = 2)
+Evaluation.tableL3<-Workflow.Evaluation.table(Posterior.dataframe,Lfp = 3)
+Evaluation.tableL4<-Workflow.Evaluation.table(Posterior.dataframe,Lfp = 4)
+Evaluation.tableL5<-Workflow.Evaluation.table(Posterior.dataframe,Lfp = 5)
+Evaluation.tableL6<-Workflow.Evaluation.table(Posterior.dataframe,Lfp = 6)
+LossPlot<-data.frame(Evaluation.table$Eutility,Evaluation.tableL2$Eutility,Evaluation.tableL3$Eutility,Evaluation.tableL4$Eutility,Evaluation.tableL5$Eutility,Evaluation.tableL6$Eutility)
+#names(UtilityPlot)<-c("LFP1","LFP2","LFP3","LFP4","LFP5","LFP6")
+plot(1:6,LossPlot[1,],ylim = c(0,50),type = "l",col="blue",main="LFP vs Total Expected Utility",xlab="LFP",ylab="TEU")
+lines(1:6,LossPlot[2,],col="red")
+lines(1:6,LossPlot[3,],col="green")
+lines(1:6,LossPlot[4,],col="orange")
+lines(1:6,LossPlot[5,])
+
+Evaluation.tableU2<-Workflow.Evaluation.table(Posterior.dataframe,Utp = 2)
+Evaluation.tableU3<-Workflow.Evaluation.table(Posterior.dataframe,Utp = 3)
+Evaluation.tableU4<-Workflow.Evaluation.table(Posterior.dataframe,Utp = 4)
+Evaluation.tableU5<-Workflow.Evaluation.table(Posterior.dataframe,Utp = 5)
+Evaluation.tableU6<-Workflow.Evaluation.table(Posterior.dataframe,Utp = 6)
+UtilityPlot<-data.frame(Evaluation.table$Eutility,Evaluation.tableU2$Eutility,Evaluation.tableU3$Eutility,Evaluation.tableU4$Eutility,Evaluation.tableU5$Eutility,Evaluation.tableU6$Eutility)
+#names(UtilityPlot)<-c("LFP1","LFP2","LFP3","LFP4","LFP5","LFP6")
+plot(1:6,UtilityPlot[1,],ylim = c(0,100),type = "l",col="blue",main="UTP vs Total Expected Utility",xlab="UTP",ylab="TEU")
+lines(1:6,UtilityPlot[2,],col="red")
+lines(1:6,UtilityPlot[3,],col="green")
+lines(1:6,UtilityPlot[4,],col="orange")
+lines(1:6,UtilityPlot[5,])
+
 PlotEvaluationTable(Evaluation.table)
 ```
 
