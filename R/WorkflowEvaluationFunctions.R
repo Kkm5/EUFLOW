@@ -5,7 +5,7 @@ options(digits=3)
 #
 # #############example
 
-#' assign.status
+#' WorkflowPathIdTag
 #'
 #' places tag on to an identifier
 #' @param x Dataframe which represent sthe Evaluation dataset or the Reference Dataset
@@ -15,7 +15,7 @@ options(digits=3)
 #' @return the tagged identifier for further processing
 #' @export
 #'
-assign.status<-function(x,status,data.type,version){
+WorkflowPathIdTag<-function(x,status,data.type,version){
   if (status == "workflow_path")
     status_tag<-paste(row.names(x),"_path","_",as.character(data.type),"_",as.character(version),sep="")
   if (status == "reference")
@@ -32,7 +32,7 @@ assign.status<-function(x,status,data.type,version){
 #' @export
 
 
-WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
+WorkflowPathData<-function(EvaluationExperimentSet,ReferenceSet){
 
     names(EvaluationExperimentSet)[1]<- "Symbol"
     names(ReferenceSet)[1]<- "Symbol"
@@ -47,22 +47,22 @@ WorkflowEvaluationData<-function(EvaluationExperimentSet,ReferenceSet){
 }
 
 
-#' Merge tag options
+#' BuildEvaluationStructure
 #'
 #' @param Workflow.Data A list of length 2. The first item is the reference dataset, and the second item is a dataframe combining all the evaluation datasets.
 #' @param ReferenceTag A string to use as a suffix for ID's from the reference dataset.
 #' @param EvaluationTag A string to use as a suffix for ID's from the evaluation dataset.
 #' @return Merged.options A dataframe with renamed labels
 #' @export
-merge_tag_options<-function(Workflow.Data,ReferenceTag="Protein",EvaluationTag="RNASeq"){
+BuildEvaluationStructure<-function(Workflow.Data,ReferenceTag="Protein",EvaluationTag="RNASeq"){
     EvaluationList<-Workflow.Data[[2]]
     Merged.options<-Workflow.Data[[1]]
-    row.names(Merged.options)<-assign.status(Merged.options,status="reference",ReferenceTag,1)
+    row.names(Merged.options)<-WorkflowPathIdTag(Merged.options,status="reference",ReferenceTag,1)
     for(o in c(1:length(EvaluationList))) {
         Evaluation_dataframe<-as.data.frame(EvaluationList[[o]])
         SymbolList<-strsplit(row.names(Evaluation_dataframe),"_")
         row.names(Evaluation_dataframe)<-sapply(SymbolList, "[", 1)
-        row.names(Evaluation_dataframe)<-assign.status(Evaluation_dataframe,status="workflow_path",EvaluationTag[o],o)
+        row.names(Evaluation_dataframe)<-WorkflowPathIdTag(Evaluation_dataframe,status="workflow_path",EvaluationTag[o],o)
         Merged.options=rbind(Merged.options,Evaluation_dataframe)
     }
     return(Merged.options)
@@ -71,7 +71,7 @@ merge_tag_options<-function(Workflow.Data,ReferenceTag="Protein",EvaluationTag="
 
 
 
-#' make.workflow.map
+#' WorkflowPathMap
 #'
 #' Make a workflow map
 #'
@@ -80,7 +80,7 @@ merge_tag_options<-function(Workflow.Data,ReferenceTag="Protein",EvaluationTag="
 #' @details  The "drivers" are the ID
 #' @export
 #'
-make.workflow.map <- function(Merged.options){
+WorkflowPathMap <- function(Merged.options){
     reference<-row.names(Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "reference",])
     workflow_path_data<-Merged.options[sapply(strsplit(row.names(Merged.options),"_"), "[", 2) == "path",]
     count.options<-function(x) {
@@ -110,7 +110,7 @@ make.workflow.map <- function(Merged.options){
 }
 
 
-#' Model.quality.list
+#' WorkflowPathModelQuality
 #'
 #' Produces a 'model quality object'
 #'
@@ -119,8 +119,8 @@ make.workflow.map <- function(Merged.options){
 #' @export
 #'
 #'
-Model.quality.list<-function(Merged.options){
-    WorkflowMap.object<-make.workflow.map(Merged.options)
+WorkflowPathModelQuality<-function(Merged.options){
+    WorkflowMap.object<-WorkflowPathMap(Merged.options)
     IdMap.example<-IdMap(DF=WorkflowMap.object,name="Workflowmap.object", primaryKey="reference",secondaryKey="workflow_paths_combined")
     WorkflowMap.object$workflow_paths_combined = as.character(WorkflowMap.object$workflow_paths_combined)
     secondaryIDs<-unlist(strsplit(WorkflowMap.object$workflow_paths_combined,","))
@@ -135,7 +135,7 @@ Model.quality.list<-function(Merged.options){
     return(Model.quality.object)
 }
 
-#' Workflow.Criterion
+#' ModelQualityPairs
 #'
 #' User specifies the model quality used to evaluate the workflow
 #' @param Model.quality.object The pairs (what kind of object?) with data to be used to estimate model quality
@@ -143,21 +143,21 @@ Model.quality.list<-function(Merged.options){
 #' @return "Values of model quality per pair"
 #' @export
 #'
-Workflow.Criterion<-function(Model.quality.object, method=method){
+ModelQualityPairs<-function(Model.quality.object, method=method){
   Model.quality<- Corr(Model.quality.object,method=method,verbose=FALSE)
   return(Model.quality)
 }
 
 
 
-#' fit2clusters.workflow
+#' ModelQualityFitToClusters
 #'
 #' "Performs the EM algorithm over the bootstrap values"
 #' @param Multiple parameters - to be completed later
 #' @return "a dataframe of posterior odds and posterior probability variance"
 #' @export
 #'
-fit2clusters.workflow<-function(Y, Ysigsq,
+ModelQualityFitToClusters<-function(Y, Ysigsq,
          bootModel,
          piStart = c(0.5, 0.5),
          VStart = c(0.1,0.1),
@@ -290,20 +290,20 @@ fit2clusters.workflow<-function(Y, Ysigsq,
 
 }
 
-#' Workflow.posteriorestimate
+#' EstimatePosteriorProbability
 #'
 #' Calls the fit2clusters.workflow function and creates a dataframe with bootstap values, posterior odds, posterior probability variance, for each identifier pair
 #' @param Model quality data and Model Quality
 #' @return a evaulatioin ready dataframe of the posterior estimates
 #' @export
 #'
-Workflow.posteriorestimate<-function(Model.quality.object,Model.Quality,postProb=NULL,postProbVar=NULL){
+EstimatePosteriorProbability<-function(Model.quality.object,Model.Quality,postProb=NULL,postProbVar=NULL){
   bootstrap<-Bootstrap(Model.quality.object,Fisher=TRUE,verbose=FALSE)
   bootModel<-as.data.frame(bootstrap)
   bootModel<-bootModel[complete.cases(bootModel),]
   pairs<-bootModel[,1:2]
   #bootModel<-bootModel[c(1:96,99:134),]
-  EMtest<-fit2clusters.workflow(bootModel$corr, bootModel$sd^2,bootModel,psi0Constraint=0, sameV=T,estimatesOnly=F,seed=Random.seed.save)
+  EMtest<-ModelQualityFitToClusters(bootModel$corr, bootModel$sd^2,bootModel,psi0Constraint=0, sameV=T,estimatesOnly=F,seed=Random.seed.save)
   #again part of the EMtest
   postProbs<-as.vector(EMtest[[1]]/(1+EMtest[[1]]))  #not needed at the output is a datafrmae from fit2clusters
   postProbVar <-as.vector(EMtest[[2]])
@@ -323,7 +323,7 @@ Workflow.posteriorestimate<-function(Model.quality.object,Model.Quality,postProb
 #' @return the expected utilty and associated estimates
 #' @export
 #'
-expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5)
+WorkflowPathExpectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5)
     {
     postProbVar = pmax(dataset$postProbVar, guarantee)
     PrPlus = sum(dataset$postProbs/postProbVar)/
@@ -344,38 +344,38 @@ expectedUtility<-function(dataset, label="", Lfp=1,Utp=1,deltaPlus=1,guarantee=1
 }
 
 
-#' Workflow.Evaluation.table
+#' WorkflowEvaluationTable
 #'
-#' Workflow.Evaluation.table:  Produces an expected utility table for guidance and evaluation
+#' WorkflowEvaluationTable:  Produces an expected utility table for guidance and evaluation
 #'
 #' @param Posterior.dataframe Produced by Workflow.posteriorestimate().
 #' @return Nicely formatted table of posterior probabilities, Pr(+) and Pr(-), standard deviations, model quality scores, and biases.
 #' @export
-Workflow.Evaluation.table<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
+WorkflowEvaluationTable<-function(Posterior.dataframe,Lfp=1,Utp=1,deltaPlus=1,guarantee=1e-5){
     WorkflowStats<-data.frame(sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",1),sapply(strsplit(Posterior.dataframe$workflow_paths_combined,"_"),"[",4),Posterior.dataframe)
     colnames(WorkflowStats)[1]<-"Marker"
     colnames(WorkflowStats)[2]<-"WorkflowID"
     WorkflowLabelDF<-WorkflowStats[WorkflowStats$WorkflowID==1,]
     WorkflowLabel<-as.data.frame(strsplit(WorkflowLabelDF$workflow_paths_combined[1],"_"))[3,]
     types<-2:max(WorkflowStats$WorkflowID)
-    Evaluation.table<-expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==1,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=WorkflowLabel)
+    Evaluation.table<-WorkflowPathExpectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==1,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=WorkflowLabel)
     for(i in types){
         WorkflowLabelDF<-WorkflowStats[WorkflowStats$WorkflowID==i,]
         WorkflowLabel<-as.data.frame(strsplit(WorkflowLabelDF$workflow_paths_combined[i],"_"))[3,]
-        Evaluation.table<-rbind(Evaluation.table,expectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==i,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=WorkflowLabel))
+        Evaluation.table<-rbind(Evaluation.table,WorkflowPathExpectedUtility(dataset=WorkflowStats[WorkflowStats$WorkflowID==i,],Lfp=Lfp,Utp=Utp,deltaPlus=deltaPlus,guarantee=guarantee,label=WorkflowLabel))
     }
     return(Evaluation.table)
 }
 
 
-#' PlotEvaluationTable
+#' ExpectedUtilityPlot
 #'
-#' PlotEvaluationTable:  Produces a plot for the expected utility of workflow path
+#' ExpectedUtilityPlot:  Produces a plot for the expected utility of workflow path
 #'
 #' @param Evaluation Table
 #' @return Plot of Expected utility and number of filters applied
 #' @export
-PlotEvaluationTable<-function(Evaluation.table,EvaluationOrder="TEU"){
+ExpectedUtilityPlot<-function(Evaluation.table,EvaluationOrder="TEU"){
     i<-as.numeric(dim(Evaluation.table)[1])-1
     if(EvaluationOrder=="TEU"){
         plot(NA,xlim=c(-0.2,5.2),ylim=c(-100,300),main=paste(EvaluationOrder," vs Number of Filters Applied"),xlab="Number of Filters Applied",ylab=as.character(EvaluationOrder)) # make an empty plot
