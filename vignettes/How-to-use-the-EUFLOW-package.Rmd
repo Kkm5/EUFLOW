@@ -1,5 +1,5 @@
 ---
-output: pdf_document
+output: word_document
 ---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
@@ -62,68 +62,58 @@ EvaluationExperimentSet<-RNASEQDATA
 ReferenceSet<-RPPADATA
 ```
 
-Now that we have the data for our example, the WorkflowEvaluationData function will modify the separate dataframes into one data structure to prepare to calcuate the model quality and perform the evaluation. The first item in the list is the Reference data and the second item in the list is the evaluation data.
+Now that we have the data for our example, the WorkflowPathData function will modify the separate dataframes into one data structure to prepare to calcuate the model quality and perform the evaluation. The first item in the list is the reference data and the second item in the list is the evaluation data.
 
 ```{r,eval=TRUE}
-
-Workflow.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
-Workflow.Data[[1]][1:9,1:3]
-
+Workflow.Path.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
+Workflow.Path.Data[[1]][1:9,1:3]
 ```
-Labels are assigned using the function to create a data structure that can sort by Reference identifiers and Evaluation identifiers. The tags are _reference for the reference data and _path for the Evaluation data. In addition the Evaluation data tags have a Workflow label to specify the type of evaluation data. 
+
+Labels are assigned using the BuildEvaluationStructure function to create a data structure that can sort by reference identifiers and evaluation identifiers. The tags are _reference for the reference data and _path for the evaluation data. In addition, the evaluation data tags have a workflow label to specify the type of evaluation data. In this example two evaluation workflow paths are assigned _RNASeqv1 amd _RNASeqv2. 
 
 ```{r}
-Merged.options<-BuildEvaluationStructure(Workflow.Data,EvaluationTag=c("RNASeqv1","RNASEQv2"))
-Merged.options[1:9,1:3]
+Evaluation.Structure<-BuildEvaluationStructure(Workflow.Path.Data,EvaluationTag=c("RNASeqv1","RNASEQv2"))
+Evaluation.Structure[1:9,1:3]
 ```
-The Model.quality.object is created to create a map between the Reference ids and the evaluation ids using the Model.quality.list function. This map is required by the IdMappingAnalysis package
+The function WorkflowPathModelQuality creates a map between the reference ids and the evaluation ids. The Path.Model.Quality object contains all of the pairs across the two platforms.
 
 ```{r}
-Model.quality.object<-WorkflowPathModelQuality(Merged.options)
+Path.Model.Quality<-WorkflowPathModelQuality(Evaluation.Structure)
 
 ```
-Next, Model Quality is an object which contains the model quality values for each of the pairs. How the Model quality is determined is specified by the user. In this example Pearson correlation r values are calculated for each Reference-Evaluation pair across all samples by the Workflow.Criterion function.
+Next, Using the function ModelQualityPairs on the object Path.Model.Quality the user can determine the appropriate model quality for this evaluation. Model.Quality.Values is an object which contains the model quality values for each of the pairs. How the values are determined is specified by the user. In this example Pearson correlation r values are calculated for each Reference-Evaluation pair across all samples.
 
 ```{r}
-Model.Quality<-ModelQualityPairs(Model.quality.object,method="pearson")
-head(as.data.frame(Model.Quality))
+Model.Quality.Values<-ModelQualityPairs(Path.Model.Quality,method="pearson")
+head(as.data.frame(Model.Quality.Values))
 ```
 
-The Model quality method can be altered using the "method"" argument in the Workflow.criterion function. Sperman r values are calculated in this example.
+Other model quality values can be calculated using the "method" argument in the  function. Sperman r values are calculated in this example.
 
 ```{r}
-Model.Quality<-ModelQualityPairs(Model.quality.object,method="spearman")
-head(as.data.frame(Model.Quality))
+Model.Quality.Values<-ModelQualityPairs(Path.Model.Quality,method="spearman")
+head(as.data.frame(Model.Quality.Values))
 ```
-Next the correlation values and the reference-evaluation pairs are are the input to the Workflow.posteriorestimate function. The first step of this function is to apply a bootstrapping procedure to obtain a resampled standard deviation and bias of the model quality values. Next the vector of correlation r values, the variance, and the bias are the input to the EM procedure to estimate the posterior probability and posterior probability variance of belonging to the "+" component. In the figure below a mixture distribution is estmated that has 2 components where one component represents the "+" component and the 0 centered component represents the "-" and "0" component.   
+Next the correlation values and the reference-evaluation pairs are are the input to the EstimatePosteriorProbability function. The first step of this function is to apply a bootstrapping procedure to obtain a resampled standard deviation and bias of the model quality values. Next the vector of correlation r values, the variance, and the bias are the input to the EM procedure to estimate the posterior probability and posterior probability variance of belonging to the "+" component. In the figure below a mixture distribution is estmated that has 2 components where one component represents the "+" component and the 0 centered component represents the "-" and "0" component.   
 
 ```{r,message=FALSE}
-Posterior.dataframe<-EstimatePosteriorProbability(Model.quality.object,Model.Quality)
-head(Posterior.dataframe)
+Posterior.Probability<-EstimatePosteriorProbability(Path.Model.Quality,Model.Quality.Values)
+head(Posterior.Probability)
 ```
 
-A user can now input values for the *Utility of a true positive Utp*, *Loss of a false positive Lfp*, a *deltaPlus* value, and a *guarantee* threshold for the estimation of the *Expected Value* of each method. Evaluation.table will take the input value of Posterior.dataframe to calculate the following values: 
-
-*PrPlus= PrPlus*
-*PrTrue= PrTrue<-PrPlus / deltaPlus*
-*PrFalse= PrFalse<-1 - PrTrue*
-*Utrue=  Utrue<-PrTrue * Utp*
-*Lfalse= Lfalse<-PrFalse * Lfp*
-*Eutility1= Utrue-Lfalse*
-*Eutility= nrow(dataset)X(Utrue-Lfalse))*
-
-This table is estimated from the default values of Utp=1,Lfp=1, deltaPlus =1, and guarantee=1e-5.
+A user can now input values for the *Utility of a true positive Utp*, *Loss of a false positive Lfp*, a *deltaPlus* value, and a *guarantee* threshold for the estimation of the *Expected Utility* of each method. Evaluation.table will take the input value of Posterior.dataframe to calculate the following values: 
+See Chapter 3 for a full description of the calculation of these values. The default values of Utp=1,Lfp=1, deltaPlus =1, and guarantee=1e-5 are used unless the user enters a new value.
 
 ```{r}
-Evaluation.table<-WorkflowEvaluationTable(Posterior.dataframe)
+Evaluation.table<-WorkflowEvaluationTable(Posterior.Probability)
 Evaluation.table
 
 ```
-A change of the deltaPlus parameter changes the proportional relationship between PrPlus and PrTrue. and Changing the Utlity of a True positive places more user utility on the true positive value as opposed to the false positive.
+A change of the deltaPlus parameter changes the proportional relationship between PrPlus and PrTrue. and Changing the Utlity of a True positive places more user utility on the true positive value as opposed to the false positive. Table X below has a value of deltaPlus = 2. Table X has a Utp = 3.
 
 ```{r}
-WorkflowEvaluationTable(Posterior.dataframe,deltaPlus = 2)
-WorkflowEvaluationTable(Posterior.dataframe,Utp=3)
+WorkflowEvaluationTable(Posterior.Probability,deltaPlus = 2)
+WorkflowEvaluationTable(Posterior.Probability,Utp=3)
 
 ```
 
@@ -137,12 +127,12 @@ In each of the following examples the EUFLOW package will be used to evaluate a 
 data(RNASEQV1v2PICCOLO)
 EvaluationExperimentSet<-RNASEQV1v2PICCOLO
 ReferenceSet<-RPPADATA
-Workflow.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
-Merged.options<-BuildEvaluationStructure(Workflow.Data,EvaluationTag=c("RNASeqv1","RNASeqv2","PICCOLO"))
-Model.quality.object<-WorkflowPathModelQuality(Merged.options)
-Model.Quality<-ModelQualityPairs(Model.quality.object,method="pearson")
-Posterior.dataframe<-EstimatePosteriorProbability(Model.quality.object,Model.Quality)
-Evaluation.table<-WorkflowEvaluationTable(Posterior.dataframe)
+Workflow.Path.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
+Evaluation.Structure<-BuildEvaluationStructure(Workflow.Path.Data,EvaluationTag=c("RNASeqv1","RNASeqv2","PICCOLO"))
+Path.Model.Quality<-WorkflowPathModelQuality(Evaluation.Structure)
+Model.Quality.Values<-ModelQualityPairs(Path.Model.Quality,method="pearson")
+Posterior.Probability<-EstimatePosteriorProbability(Path.Model.Quality,Model.Quality)
+Evaluation.table<-WorkflowEvaluationTable(Posterior.Probability)
 Evaluation.table
 ```
 The second experiment uses the BRCA-TCGA data.
@@ -153,18 +143,18 @@ dim(BRCARPPADATAFINAL)
 data(BRCASALMONDATAFINAL)
 EvaluationExperimentSet<-BRCASALMONDATAFINAL
 ReferenceSet<-BRCARPPADATAFINAL
-Workflow.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
-Merged.options<-BuildEvaluationStructure(Workflow.Data,EvaluationTag=c("AllGeneIDs","TransmembraneGenesOnly","Non-TransmembraneGenes","Low-Complexity","High-Complexity"))
-Model.quality.object<-WorkflowPathModelQuality(Merged.options)
-Model.Quality<-ModelQualityPairs(Model.quality.object,method="pearson")
-Posterior.dataframe<-EstimatePosteriorProbability(Model.quality.object,Model.Quality)
-Evaluation.table<-WorkflowEvaluationTable(Posterior.dataframe)
+Workflow.Path.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
+Evaluation.Structure<-BuildEvaluationStructure(Workflow.Path.Data,EvaluationTag=c("AllGeneIDs","TransmembraneGenesOnly","Non-TransmembraneGenes","Low-Complexity","High-Complexity"))
+Path.Model.Quality<-WorkflowPathModelQuality(Evaluation.Structure)
+Model.Quality.Values<-ModelQualityPairs(Path.Model.Quality,method="pearson")
+Posterior.Probability<-EstimatePosteriorProbability(Path.Model.Quality,Model.Quality.Values)
+Evaluation.table<-WorkflowEvaluationTable(Posterior.Probability)
 Evaluation.table
-Evaluation.tableL2<-WorkflowEvaluationTable(Posterior.dataframe,Lfp = 2)
-Evaluation.tableL3<-WorkflowEvaluationTable(Posterior.dataframe,Lfp = 3)
-Evaluation.tableL4<-WorkflowEvaluationTable(Posterior.dataframe,Lfp = 4)
-Evaluation.tableL5<-WorkflowEvaluationTable(Posterior.dataframe,Lfp = 5)
-Evaluation.tableL6<-WorkflowEvaluationTable(Posterior.dataframe,Lfp = 6)
+Evaluation.tableL2<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 2)
+Evaluation.tableL3<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 3)
+Evaluation.tableL4<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 4)
+Evaluation.tableL5<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 5)
+Evaluation.tableL6<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 6)
 LossPlot<-data.frame(Evaluation.table$Eutility,Evaluation.tableL2$Eutility,Evaluation.tableL3$Eutility,Evaluation.tableL4$Eutility,Evaluation.tableL5$Eutility,Evaluation.tableL6$Eutility)
 #names(UtilityPlot)<-c("LFP1","LFP2","LFP3","LFP4","LFP5","LFP6")
 plot(1:6,LossPlot[1,],ylim = c(0,50),type = "l",col="blue",main="LFP vs Total Expected Utility",xlab="LFP",ylab="TEU")
@@ -173,11 +163,11 @@ lines(1:6,LossPlot[3,],col="green")
 lines(1:6,LossPlot[4,],col="orange")
 lines(1:6,LossPlot[5,])
 
-Evaluation.tableU2<-WorkflowEvaluationTable(Posterior.dataframe,Utp = 2)
-Evaluation.tableU3<-WorkflowEvaluationTable(Posterior.dataframe,Utp = 3)
-Evaluation.tableU4<-WorkflowEvaluationTable(Posterior.dataframe,Utp = 4)
-Evaluation.tableU5<-WorkflowEvaluationTable(Posterior.dataframe,Utp = 5)
-Evaluation.tableU6<-WorkflowEvaluationTable(Posterior.dataframe,Utp = 6)
+Evaluation.tableU2<-WorkflowEvaluationTable(Posterior.Probability,Utp = 2)
+Evaluation.tableU3<-WorkflowEvaluationTable(Posterior.Probability,Utp = 3)
+Evaluation.tableU4<-WorkflowEvaluationTable(Posterior.Probability,Utp = 4)
+Evaluation.tableU5<-WorkflowEvaluationTable(Posterior.Probability,Utp = 5)
+Evaluation.tableU6<-WorkflowEvaluationTable(Posterior.Probability,Utp = 6)
 UtilityPlot<-data.frame(Evaluation.table$Eutility,Evaluation.tableU2$Eutility,Evaluation.tableU3$Eutility,Evaluation.tableU4$Eutility,Evaluation.tableU5$Eutility,Evaluation.tableU6$Eutility)
 #names(UtilityPlot)<-c("LFP1","LFP2","LFP3","LFP4","LFP5","LFP6")
 plot(1:6,UtilityPlot[1,],ylim = c(0,100),type = "l",col="blue",main="UTP vs Total Expected Utility",xlab="UTP",ylab="TEU")
@@ -193,12 +183,12 @@ ExpectedUtilityPlot(Evaluation.table)
 data(BRCATHRESHOLD)
 EvaluationExperimentSet<-BRCATHRESHOLD
 ReferenceSet<-BRCARPPADATAFINAL
-Workflow.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
-Merged.options<-BuildEvaluationStructure(Workflow.Data,EvaluationTag=c("Allfeatures","Over1000","Over5000","Over10000"))
-Model.quality.object<-WorkflowPathModelQuality(Merged.options)
-Model.Quality<-ModelQualityPairs(Model.quality.object,method="pearson")
-Posterior.dataframe<-EstimatePosteriorProbability(Model.quality.object,Model.Quality)
-Evaluation.table<-WorkflowEvaluationTable(Posterior.dataframe)
+Workflow.Path.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
+Evaluation.Structure<-BuildEvaluationStructure(Workflow.Path.Data,EvaluationTag=c("Allfeatures","Over1000","Over5000","Over10000"))
+Path.Model.Quality<-WorkflowPathModelQuality(Evaluation.Structure)
+Model.Quality.Values<-ModelQualityPairs(Path.Model.Quality,method="pearson")
+Posterior.Probability<-EstimatePosteriorProbability(Path.Model.Quality,Model.Quality.Values)
+Evaluation.table<-WorkflowEvaluationTable(Posterior.Probability)
 Evaluation.table
 ExpectedUtilityPlot(Evaluation.table)
 ```
