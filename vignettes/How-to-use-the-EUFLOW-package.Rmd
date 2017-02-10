@@ -141,13 +141,16 @@ The second experiment uses the BRCA-TCGA data.
 data(BRCARPPADATAFINAL)
 dim(BRCARPPADATAFINAL)
 data(BRCASALMONDATAFINAL)
+dim(BRCASALMONDATAFINAL)
 EvaluationExperimentSet<-BRCASALMONDATAFINAL
 ReferenceSet<-BRCARPPADATAFINAL
 Workflow.Path.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
 Evaluation.Structure<-BuildEvaluationStructure(Workflow.Path.Data,EvaluationTag=c("AllGeneIDs","TransmembraneGenesOnly","Non-TransmembraneGenes","Low-Complexity","High-Complexity"))
 Path.Model.Quality<-WorkflowPathModelQuality(Evaluation.Structure)
 Model.Quality.Values<-ModelQualityPairs(Path.Model.Quality,method="pearson")
+as.data.frame(Model.Quality.Values)
 Posterior.Probability<-EstimatePosteriorProbability(Path.Model.Quality,Model.Quality.Values)
+data.frame(as.data.frame(Model.Quality.Values)$workflow_paths_combined,Posterior.Probability)
 Evaluation.table<-WorkflowEvaluationTable(Posterior.Probability)
 Evaluation.table
 Evaluation.tableL2<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 2)
