@@ -126,7 +126,9 @@ In each of the following examples the EUFLOW package will be used to evaluate a 
 ```{r}
 data(RNASEQV1v2PICCOLO)
 EvaluationExperimentSet<-RNASEQV1v2PICCOLO
+dim(RNASEQV1v2PICCOLO)
 ReferenceSet<-RPPADATA
+dim(ReferenceSet)
 Workflow.Path.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
 Evaluation.Structure<-BuildEvaluationStructure(Workflow.Path.Data,EvaluationTag=c("RNASeqv1","RNASeqv2","PICCOLO"))
 Path.Model.Quality<-WorkflowPathModelQuality(Evaluation.Structure)
@@ -134,6 +136,34 @@ Model.Quality.Values<-ModelQualityPairs(Path.Model.Quality,method="pearson")
 Posterior.Probability<-EstimatePosteriorProbability(Path.Model.Quality,Model.Quality)
 Evaluation.table<-WorkflowEvaluationTable(Posterior.Probability)
 Evaluation.table
+
+Evaluation.tableL2<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 2)
+Evaluation.tableL3<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 3)
+Evaluation.tableL4<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 4)
+Evaluation.tableL5<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 5)
+Evaluation.tableL6<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 6)
+LossPlot<-data.frame(Evaluation.table$Eutility,Evaluation.tableL2$Eutility,Evaluation.tableL3$Eutility,Evaluation.tableL4$Eutility,Evaluation.tableL5$Eutility,Evaluation.tableL6$Eutility)
+#names(UtilityPlot)<-c("LFP1","LFP2","LFP3","LFP4","LFP5","LFP6")
+plot(1:6,LossPlot[1,],ylim = c(0,200),type = "l",col="blue",main="LFP vs Total Expected Utility",xlab="LFP",ylab="TEU")
+lines(1:6,LossPlot[2,],col="red")
+lines(1:6,LossPlot[3,],col="green")
+lines(1:6,LossPlot[4,],col="orange")
+lines(1:6,LossPlot[5,])
+
+Evaluation.tableU2<-WorkflowEvaluationTable(Posterior.Probability,Utp = 2)
+Evaluation.tableU3<-WorkflowEvaluationTable(Posterior.Probability,Utp = 3)
+Evaluation.tableU4<-WorkflowEvaluationTable(Posterior.Probability,Utp = 4)
+Evaluation.tableU5<-WorkflowEvaluationTable(Posterior.Probability,Utp = 5)
+Evaluation.tableU6<-WorkflowEvaluationTable(Posterior.Probability,Utp = 6)
+UtilityPlot<-data.frame(Evaluation.table$Eutility,Evaluation.tableU2$Eutility,Evaluation.tableU3$Eutility,Evaluation.tableU4$Eutility,Evaluation.tableU5$Eutility,Evaluation.tableU6$Eutility)
+#names(UtilityPlot)<-c("LFP1","LFP2","LFP3","LFP4","LFP5","LFP6")
+plot(1:6,UtilityPlot[1,],ylim = c(0,200),type = "l",col="blue",main="UTP vs Total Expected Utility",xlab="UTP",ylab="TEU")
+lines(1:6,UtilityPlot[2,],col="red")
+lines(1:6,UtilityPlot[3,],col="green")
+lines(1:6,UtilityPlot[4,],col="orange")
+lines(1:6,UtilityPlot[5,])
+
+
 ```
 The second experiment uses the BRCA-TCGA data.
 
@@ -193,6 +223,34 @@ Model.Quality.Values<-ModelQualityPairs(Path.Model.Quality,method="pearson")
 Posterior.Probability<-EstimatePosteriorProbability(Path.Model.Quality,Model.Quality.Values)
 Evaluation.table<-WorkflowEvaluationTable(Posterior.Probability)
 Evaluation.table
+
+Evaluation.tableL2<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 2)
+Evaluation.tableL3<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 3)
+Evaluation.tableL4<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 4)
+Evaluation.tableL5<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 5)
+Evaluation.tableL6<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 6)
+LossPlot<-data.frame(Evaluation.table$Eutility,Evaluation.tableL2$Eutility,Evaluation.tableL3$Eutility,Evaluation.tableL4$Eutility,Evaluation.tableL5$Eutility,Evaluation.tableL6$Eutility)
+#names(UtilityPlot)<-c("LFP1","LFP2","LFP3","LFP4","LFP5","LFP6")
+plot(1:6,LossPlot[1,],ylim = c(0,50),type = "l",col="blue",main="LFP vs Total Expected Utility",xlab="LFP",ylab="TEU")
+lines(1:6,LossPlot[2,],col="red")
+lines(1:6,LossPlot[3,],col="green")
+lines(1:6,LossPlot[4,],col="orange")
+lines(1:6,LossPlot[5,])
+
+Evaluation.tableU2<-WorkflowEvaluationTable(Posterior.Probability,Utp = 2)
+Evaluation.tableU3<-WorkflowEvaluationTable(Posterior.Probability,Utp = 3)
+Evaluation.tableU4<-WorkflowEvaluationTable(Posterior.Probability,Utp = 4)
+Evaluation.tableU5<-WorkflowEvaluationTable(Posterior.Probability,Utp = 5)
+Evaluation.tableU6<-WorkflowEvaluationTable(Posterior.Probability,Utp = 6)
+UtilityPlot<-data.frame(Evaluation.table$Eutility,Evaluation.tableU2$Eutility,Evaluation.tableU3$Eutility,Evaluation.tableU4$Eutility,Evaluation.tableU5$Eutility,Evaluation.tableU6$Eutility)
+#names(UtilityPlot)<-c("LFP1","LFP2","LFP3","LFP4","LFP5","LFP6")
+plot(1:6,UtilityPlot[1,],ylim = c(0,100),type = "l",col="blue",main="UTP vs Total Expected Utility",xlab="UTP",ylab="TEU")
+lines(1:6,UtilityPlot[2,],col="red")
+lines(1:6,UtilityPlot[3,],col="green")
+lines(1:6,UtilityPlot[4,],col="orange")
+lines(1:6,UtilityPlot[5,])
+
+
 ExpectedUtilityPlot(Evaluation.table)
 ```
 
