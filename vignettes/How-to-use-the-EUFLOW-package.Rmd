@@ -29,13 +29,18 @@ options(stringsAsFactors = FALSE)
 options(digits=3)
 system("touch I_ran_Rmd")
 ```
+
 ### I. Purpose of the EUFLOW package
 
-The data in bioinformatics is often in some “raw” form which is not yet ready for analysis. Processing this data often involves several steps, called variously a workflow, pipeline, or protocol. We have developed the EUFLOW package to assist users who have multiple versions of data that arise from different *workflow paths*. Each of the *final processed data* files should contain similar features as the rows of the dataframe with columns of identical samples. The collective *workflow path data* is refered to as the *Evaluation Dataset*.  In order to evaluate the alternitive versions of the data the user must also provide a *Reference Dataset*. The Evaluation Dataset and the Reference Dataset must have an expected quantitative relationship, such as mRNA/protein coorelation. The EUFLOW package utilizes this relationship (*Model Quality*) through our methodology to determine the *Expected Utility* for each of the *workflow paths*.  
 
-### II. Usage of EUFLOW
 
-Users are required to input two separate data files, regardless of the analysis type. The EUFLOW package depends upon a model quality heuristic which we will demonstate here as correlation between gene expression and protein expression. The first data file, for example, we will use ovarian TCGA RNASeq data on two separate workflows provided on the same samples. Only samples for which protein expression data was available are used in the RNASEQDATA file, the HUGO Gene names and descriptions for these proteins are presented in the table below.
+### II.
+
+  
+
+### III. Usage of EUFLOW
+
+
 
 
 
@@ -72,8 +77,9 @@ Workflow.Path.Data[[1]][1:9,1:3]
 Labels are assigned using the BuildEvaluationStructure function to create a data structure that can sort by reference identifiers and evaluation identifiers. The tags are _reference for the reference data and _path for the evaluation data. In addition, the evaluation data tags have a workflow label to specify the type of evaluation data. In this example two evaluation workflow paths are assigned _RNASeqv1 amd _RNASeqv2. 
 
 ```{r}
-Evaluation.Structure<-BuildEvaluationStructure(Workflow.Path.Data,EvaluationTag=c("RNASeqv1","RNASEQv2"))
+Evaluation.Structure<-BuildEvaluationStructure(Workflow.Path.Data,EvaluationTag=c("RNASeqv1","RNASeqv2"))
 Evaluation.Structure[1:9,1:3]
+WorkflowPathMap(Evaluation.Structure)
 ```
 The function WorkflowPathModelQuality creates a map between the reference ids and the evaluation ids. The Path.Model.Quality object contains all of the pairs across the two platforms.
 
@@ -112,13 +118,13 @@ Evaluation.table
 A change of the deltaPlus parameter changes the proportional relationship between PrPlus and PrTrue. and Changing the Utlity of a True positive places more user utility on the true positive value as opposed to the false positive. Table X below has a value of deltaPlus = 2. Table X has a Utp = 3.
 
 ```{r}
-WorkflowEvaluationTable(Posterior.Probability,deltaPlus = 2)
+WorkflowEvaluationTable(Posterior.Probability,deltaPlus = 0.5)
 WorkflowEvaluationTable(Posterior.Probability,Utp=3)
 
 ```
 
 
-### III. Examples of EUFLOW Experiments
+### IV. Examples of EUFLOW Experiments
 
 
 In each of the following examples the EUFLOW package will be used to evaluate a workflow path decision on real data. The first example is an RNASeq experiment on ovarian samples across three different workflow paths, RNASeqV1, RNASeqV2, and the PICCOLO workflow path. 
@@ -130,7 +136,9 @@ dim(RNASEQV1v2PICCOLO)
 ReferenceSet<-RPPADATA
 dim(ReferenceSet)
 Workflow.Path.Data<-WorkflowPathData(EvaluationExperimentSet,ReferenceSet)
+#Workflow.Path.Data
 Evaluation.Structure<-BuildEvaluationStructure(Workflow.Path.Data,EvaluationTag=c("RNASeqv1","RNASeqv2","PICCOLO"))
+#Evaluation.Structure
 Path.Model.Quality<-WorkflowPathModelQuality(Evaluation.Structure)
 Model.Quality.Values<-ModelQualityPairs(Path.Model.Quality,method="pearson")
 Posterior.Probability<-EstimatePosteriorProbability(Path.Model.Quality,Model.Quality)
@@ -181,7 +189,7 @@ Model.Quality.Values<-ModelQualityPairs(Path.Model.Quality,method="pearson")
 as.data.frame(Model.Quality.Values)
 Posterior.Probability<-EstimatePosteriorProbability(Path.Model.Quality,Model.Quality.Values)
 data.frame(as.data.frame(Model.Quality.Values)$workflow_paths_combined,Posterior.Probability)
-Evaluation.table<-WorkflowEvaluationTable(Posterior.Probability)
+Evaluation.table<-WorkflowEvaluationTable(Posterior.Probability,deltaPlus = 0.975)
 Evaluation.table
 Evaluation.tableL2<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 2)
 Evaluation.tableL3<-WorkflowEvaluationTable(Posterior.Probability,Lfp = 3)
